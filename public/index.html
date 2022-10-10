@@ -1,0 +1,237 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My UI</title>
+    
+    <!-- The following line references an external css file -->
+    <!-- It defines style rules for your page, and elements in your page -->
+    <link href="css/style.css" rel="stylesheet">
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    
+</head>
+<body> 
+    <div class="header">
+        <h1>Project 1- Interface to a smart Shopping Cart</h1>
+        <h2>Anna Chambers</h2>
+    </div>
+
+    <div class="full">
+        <div class="main">
+            <div class="tab">
+                <div>
+                    <button class="tablinks active" onclick="openTab(event, 'Home')">Home</button>
+                    <button class="tablinks" id="mapTab" onclick="openTab(event, 'Map')">Map</button>
+                    <button class="tablinks" id="checkoutTab" onclick="openTab(event, 'Checkout')">Checkout</button>
+                </div>
+                
+                <button style="float:right;"><i class='fas fa-user-circle' style='font-size:30px;'></i></button>
+                <div style="float:right; font-size: 20px; padding: 18px; color: #F04520">Current Aisle: 4</div>
+            </div>
+
+            <div id="Home" class="tabcontent" style="display: block">
+                <div class="homeFlex"> 
+                    <div class="dropdown">   
+                        <button class="collapsible">In Cart</button>
+                        <div class="content">
+                            <table id="inCart">
+                                <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                </tr>
+                            </table>
+                            <button class="dropdownBtn" type="button" onclick="checkoutButton()">Checkout</button>
+                        </div>
+                        <button class="collapsible">Shopping List</button>
+                        <div class="content">
+                            <div id="shoppingList" class="shoppingList"></div>
+                            <form action="#" onsubmit="updateList();return false">
+                                <input type="text" id="addToList" name="addToList" autocomplete="off">
+                                <input type="submit" value="Add" style="margin-bottom: 5px;">
+                            </form> 
+                            <button class="dropdownBtn" type="button" onclick="viewMap()">View Map</button>
+                        </div>
+                        <button class="collapsible">Coupons</button>
+                        <div class="content">
+                            <div id="couponContent" class="couponContent"></div>
+                        </div>
+                    </div>
+                    <div class="search">
+                        <input type="text" class="searchBar" id="searchBar" placeholder="Search for products" title="Type in a name">
+                        <div style="margin-bottom: 10px;" id="aisleIcon"></div>
+                        <div class="searchItemDiv" id="searchItemDiv"></div>
+                    </div>
+                    <div class="setBudget">
+                        <label for="budget">$</label>
+                        <input type="text" id="budget" name="budget" style="width: 100px;">
+                    </div>
+                    <div class="budget">
+                        <canvas id="budgetScale" width="100" height="720px" style="border:1px solid #51555B;">
+                        Your browser does not support the HTML5 canvas tag.</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Map" class="tabcontent">
+                <div id="container">
+                    <canvas id="mapBackground" class="mapBackground" width="1000px" height="600px"></canvas>
+                    <div class="mapTop">
+                        <div class="aisleSection">
+                            <label>Bakery</label>
+                        </div>
+                        <div class="aisleSection">
+                            <label>Deli</label>
+                        </div>
+                        <div class="aisleNumCheck">
+                            <input type="checkbox" id="aisleNumCheck" onclick="showAisleNum()">
+                            <label for="aisleNumCheck">Show Aisle Numbers</label>
+                        </div>
+                    </div>
+                    <div class="mapMiddle">
+                        <div class="mapLeft">
+                            <div class="mapRow">
+                                <div class="aisle1"></div>
+                                <div class="aisleNum" style="display: none;">5</div>
+                                <div class="aisle1"></div>
+                                <div class="aisleNum" style="display: none;">6</div>
+                                <div class="aisle1"></div>
+                            </div>
+                            <div class="mapRow">
+                                <div class="aisle1"></div>
+                                <div class="aisleNum" style="display: none;">1</div>
+                                <div class="aisle1"></div>
+                                <div class="aisleNum" style="display: none;">2</div>
+                                <div class="aisle1"></div>
+                            </div>
+                        </div>
+                        <div class="mapMiddleCenter">
+                            <div class="mapRow">
+                                <div class="aisle1"></div>
+                                <div class="aisleNum" style="display: none;">7</div>
+                                <div class="aisle1"></div>
+                                <div class="aisleNum" style="display: none;">8</div>
+                                <div class="aisle1"></div>
+                            </div>
+                            <div class="mapRow">
+                                <div class="aisle1"></div>
+                                <div class="aisleNum" style="display: none;">3</div>
+                                <div class="aisle1"></div>
+                                <div class="aisleNum" style="display: none;">4</div>
+                                <div class="aisle1"></div>
+                            </div>
+                        </div>
+                        <div class="mapRight">
+                            <div class="mapRow">
+                                <div class="aisle2"></div>
+                                <div class="aisleNum" style="display: none;">9</div>
+                                <div class="aisle2"></div>
+                                <div class="aisleNum" style="display: none;">10</div>
+                                <div class="aisle2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mapBottom">
+                        <div class="aisleSection">
+                            <label>Floral</label>
+                        </div>
+                        <div class="aisleSection">
+                            <label>Checkout</label>
+                        </div>
+                        <div class="aisleSection">
+                            <label>Cosmetics</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            <div id="Checkout" class="tabcontent">
+                <div id="detailsPopup" class="detailsPopup">
+                    <div class="detailsPopup-content">
+                        <span class="close">&times;</span>
+                        <p id="detailsText"></p>
+                        <ul id="detailsList"></ul>
+                    </div>
+                </div>
+                <div id="payPopup" class="payPopup">
+                    <div class="payPopup-content">
+                        <span class="close">&times;</span>
+                        <h1>Insert Credit/Debit Card</h1>
+                        <label for="pin">Enter pin:</label>
+                        <input type="text" id="pin" name="pin" style="width: 100px;">
+                    </div>
+                </div>
+                <div class="checkoutContent">
+                    <div class="cart">
+                        <div class="cartHeader"><i class="fas fa-shopping-cart" style='font-size:30px;'></i> Cart</div>
+                        <table id="inCartCheck">
+                            <tr>
+                            <th class="checkoutText">Item</th>
+                            <th class="checkoutText">Quantity</th>
+                            <th class="checkoutText">Price</th>
+                            <th class="checkoutText"></th>
+                            </tr>
+                        </table>
+                        <button class="dropdownBtn" style="width: 100px; margin: 5px;" onclick="showPayPopup()">Pay</button>
+                    </div>
+                    <div class="checkoutRhs">
+                        <div class="pay" id="pay">
+                            <div class="cartHeader" style="background-color: #F04520;"><i class="fa fa-exclamation-triangle" style='font-size:30px;'></i> WARNINGS:</div>
+                            <div id="warningList" class="couponContent" style="margin: 5px;"></div>
+                        </div>
+                        <div class="checkoutCoupon">
+                            <div class="cartHeader"><i class="fas fa-tag" style='font-size:30px;'></i> Coupons</div>
+                            <div id="couponContentCheck" class="couponContent" style="margin: 5px;"></div>
+                            <button class="dropdownBtn" type="button" style="margin: 5px;">Search for more</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <div>
+                <button id="start" class="SimulateButton" name="Start">Simulate</button>
+                <button id="stop" class="SimulateButton" name="Stop">Pause</button>
+            </div> 
+            <h2>Mock Secondary Decive:</h2>  
+            <div class="mobileDevice">
+                <div class="mobileHeader">
+                    <h1>Generic Name</h1>
+                </div>
+                <div id="mobileList" class="mobileTabContent" style="display: block;">
+                    <h2>Shopping List</h2>
+                    <div id="shoppingListMobile" class="shoppingList"></div>
+                    <form action="#" onsubmit="updateList();return false">
+                        <input type="text" id="addToListMobile" name="addToListMobile" autocomplete="off">
+                        <input type="submit" value="Add" style="margin-bottom: 5px;">
+                    </form> 
+                </div>
+                <div id="mobileCart" class="mobileTabContent">
+                    <table id="inCartMobile">
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                        </tr>
+                    </table>
+                </div>
+                <div id="mobileCoupon" class="mobileTabContent">
+                    <h2>Today's Deals</h2>
+                    <div id="couponContentMobile" class="couponContent"></div>
+                </div>
+                <div class="mobileFooter">
+                    <button class="mobileTablinks" name="mobileTablinks" onclick="openMobileTab(event, 'mobileCart')"><i class="fas fa-shopping-cart" style='font-size:30px;'></i></button>
+                    <button class="mobileTablinksActive" name="mobileTablinks" id="mapTab" onclick="openMobileTab(event, 'mobileList')"><i class='far fa-file-alt' style='font-size:30px;'></i></button>
+                    <button class="mobileTablinks" name="mobileTablinks" id="checkoutTab" onclick="openMobileTab(event, 'mobileCoupon')"><i class="fas fa-tag" style='font-size:30px;'></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load external JS files -->
+    <!-- This is where you will do most of the 'work' for your applications -->
+    <script src="js/main.js"></script>
+</body>
+</html>
