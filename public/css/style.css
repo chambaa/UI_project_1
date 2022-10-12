@@ -75,7 +75,7 @@ body {
 }
 
 .collapsible {
-    background-color: #1073E5;
+    background-color: #739086;
     color: white;
     cursor: pointer;
     padding: 18px;
@@ -84,11 +84,11 @@ body {
     text-align: left;
     outline: none;
     font-size: 15px;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    box-shadow: 8px 0px 16px 0 rgba(0,0,0,0.2);
 }
   
 .active, .collapsible:hover {
-    background-color: #0c5cb7;
+    background-color: #5c746c;
     
 }
   
@@ -133,7 +133,7 @@ body {
 .dropdownBtn {
     float: right;
     margin-bottom: 10px;
-    background-color: #F04520;
+    background-color: #8C6E37;
     color: white;
     border: gray;
     border-radius: 5px;
@@ -144,17 +144,17 @@ body {
 }
 
 .dropdownBtn:hover {
-    background-color: #c03719;
+    background-color: #70582c;
 }
 
 .dropdownBtn:disabled {
     background-color: gray;
 }
 
-.warningBtn {
+.payBtn {
     float: right;
     margin-bottom: 10px;
-    background-color: #1073E5;
+    background-color: #593202;
     color: white;
     border: gray;
     border-radius: 5px;
@@ -164,8 +164,8 @@ body {
     padding:5px;
 }
 
-.warningBtn:hover {
-    background-color: #0c5cb7;
+.payBtn:hover {
+    background-color: #331c01;
 }
 
 table {
@@ -203,7 +203,7 @@ tfoot {
 
 .addToListBtn {
     margin: 5px;
-    background-color: #F04520;
+    background-color: #8C6E37;
     color: white;
     border: gray;
     border-radius: 5px;
@@ -215,12 +215,12 @@ tfoot {
 }
 
 .addToListBtn:hover {
-    background-color: #c03719;
+    background-color: #70582c;
 }
 
 .showOnMapBtn {
     margin: 5px;
-    background-color: #0c5cb7;
+    background-color: #593202;
     color: white;
     border: gray;
     border-radius: 5px;
@@ -232,7 +232,7 @@ tfoot {
 }
 
 .showOnMapBtn:hover {
-    background-color: #094992;
+    background-color: #331c01;
 }
 
 .showOnMapBtn:disabled {
@@ -335,7 +335,7 @@ tfoot {
 }
 
 .SimulateButton {
-    background-color: #1073E5;
+    background-color: #739086;
     color: #fff;
     padding: 10px;
     border-radius: 5px;
@@ -343,7 +343,7 @@ tfoot {
 }
 
 .SimulateButton:hover {
-    background-color: #0c5cb7;
+    background-color: #5c746c;
     color: #fff;
     padding: 10px;
     border-radius: 5px;
@@ -372,7 +372,7 @@ tfoot {
 }
 
 .cartHeader {
-    background-color: #1073E5;
+    background-color: #739086;
     color: white;
     height: 50px;
     padding: 10px;
@@ -412,7 +412,7 @@ li {
 }
 
 .checkoutText {
-    color: #1073E5;
+    color: #739086;
     font-size: large;
 }
 
@@ -437,7 +437,7 @@ li {
 
 .mobileHeader {
     padding: 10px;
-    background: #1073E5;
+    background: #739086;
     color: white;
     font-size: 10px;
     min-height: 60px;
@@ -471,14 +471,14 @@ li {
 .quantityBtn {
     border: none;
     background-color: lightgray;
-    /* color: #F04520; */
+    /* color: #8C6E37; */
     color: white;
     border-radius:20px;
     margin: 5px;
 }
 
 .quantityBtn:hover {
-    /* color: #c03719; */
+    /* color: #70582c; */
     background-color: gray;
 }
 
@@ -491,7 +491,7 @@ li {
 .mobileTablinksActive {
     background-color: lightgray;
     border: none;
-    color: #F04520;
+    color: #8C6E37;
 }
 
 .mobileTabContent {

@@ -21,19 +21,19 @@
         <div class="main">
             <div class="tab">
                 <div>
-                    <button class="tablinks active" onclick="openTab(event, 'Home')">Home</button>
+                    <button class="tablinks active" id="homeTab" onclick="openTab(event, 'Home')">Home</button>
                     <button class="tablinks" id="mapTab" onclick="openTab(event, 'Map')">Map</button>
                     <button class="tablinks" id="checkoutTab" onclick="openTab(event, 'Checkout')">Checkout</button>
                 </div>
                 
                 <button style="float:right;"><i class='fas fa-user-circle' style='font-size:30px;'></i></button>
-                <div style="float:right; font-size: 20px; padding: 18px; color: #F04520">Current Aisle: 4</div>
+                <div style="float:right; font-size: 20px; padding: 18px; color: #593202" id="currentAisle">Current Aisle: None</div>
             </div>
 
             <div id="Home" class="tabcontent" style="display: block">
                 <div class="homeFlex"> 
                     <div class="dropdown">   
-                        <button class="collapsible">In Cart</button>
+                        <button class="collapsible" id="cartCollapsible">In Cart</button>
                         <div class="content">
                             <table id="inCart">
                                 <tr>
@@ -44,16 +44,16 @@
                             </table>
                             <button class="dropdownBtn" type="button" onclick="checkoutButton()">Checkout</button>
                         </div>
-                        <button class="collapsible">Shopping List</button>
+                        <button class="collapsible" id="listCollapsible">Shopping List</button>
                         <div class="content">
                             <div id="shoppingList" class="shoppingList"></div>
                             <form action="#" onsubmit="updateList();return false">
                                 <input type="text" id="addToList" name="addToList" autocomplete="off">
-                                <input type="submit" value="Add" style="margin-bottom: 5px;">
+                                <input type="submit" value="Add" style="margin-bottom: 5px;" id="addToListBtn">
                             </form> 
-                            <button class="dropdownBtn" type="button" onclick="viewMap()">View Map</button>
+                            <button class="dropdownBtn" type="button" id="listViewMap" onclick="viewMap()">View Map</button>
                         </div>
-                        <button class="collapsible">Coupons</button>
+                        <button class="collapsible" id="couponCollapsible">Coupons</button>
                         <div class="content">
                             <div id="couponContent" class="couponContent"></div>
                         </div>
@@ -178,7 +178,7 @@
                     </div>
                     <div class="checkoutRhs">
                         <div class="pay" id="pay">
-                            <div class="cartHeader" style="background-color: #F04520;"><i class="fa fa-exclamation-triangle" style='font-size:30px;'></i> WARNINGS:</div>
+                            <div class="cartHeader" style="background-color: #90738c;"><i class="fa fa-exclamation-triangle" style='font-size:30px;'></i> WARNINGS:</div>
                             <div id="warningList" class="couponContent" style="margin: 5px;"></div>
                         </div>
                         <div class="checkoutCoupon">
@@ -205,7 +205,7 @@
                     <div id="shoppingListMobile" class="shoppingList"></div>
                     <form action="#" onsubmit="updateList();return false">
                         <input type="text" id="addToListMobile" name="addToListMobile" autocomplete="off">
-                        <input type="submit" value="Add" style="margin-bottom: 5px;">
+                        <input type="submit" value="Add" style="margin-bottom: 5px;" id="addToListBtnMobile">
                     </form> 
                 </div>
                 <div id="mobileCart" class="mobileTabContent">
@@ -222,9 +222,9 @@
                     <div id="couponContentMobile" class="couponContent"></div>
                 </div>
                 <div class="mobileFooter">
-                    <button class="mobileTablinks" name="mobileTablinks" onclick="openMobileTab(event, 'mobileCart')"><i class="fas fa-shopping-cart" style='font-size:30px;'></i></button>
-                    <button class="mobileTablinksActive" name="mobileTablinks" id="mapTab" onclick="openMobileTab(event, 'mobileList')"><i class='far fa-file-alt' style='font-size:30px;'></i></button>
-                    <button class="mobileTablinks" name="mobileTablinks" id="checkoutTab" onclick="openMobileTab(event, 'mobileCoupon')"><i class="fas fa-tag" style='font-size:30px;'></i></button>
+                    <button class="mobileTablinks" name="mobileTablinks" id="cartTabMobile" onclick="openMobileTab(event, 'mobileCart')"><i class="fas fa-shopping-cart" style='font-size:30px;'></i></button>
+                    <button class="mobileTablinksActive" name="mobileTablinks" id="listTabMobile" onclick="openMobileTab(event, 'mobileList')"><i class='far fa-file-alt' style='font-size:30px;'></i></button>
+                    <button class="mobileTablinks" name="mobileTablinks" id="couponTabMobile" onclick="openMobileTab(event, 'mobileCoupon')"><i class="fas fa-tag" style='font-size:30px;'></i></button>
                 </div>
             </div>
         </div>

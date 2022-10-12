@@ -1,3 +1,7 @@
+var currentX = 0;
+var currentY = 570;
+var inAisle = false;
+
 // Change main content on tab click
 function openTab(evt, idName) {
     var i, tabcontent, tablinks;
@@ -23,7 +27,6 @@ function openMobileTab(evt, idName) {
   tablinks = document.getElementsByName("mobileTablinks");
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace("Active", "");
-    console.log(tablinks[i].className)
   }
   document.getElementById(idName).style.display = "block";
   evt.currentTarget.className += "Active";
@@ -68,7 +71,7 @@ var search = function(evt) {
   var label = document.createElement("label");
   if(evt.target.value.toLowerCase() == "milk")
   {
-    var aisleText = document.createTextNode("Aisle 3");
+    var aisleText = document.createTextNode("Aisle 7");
     label.appendChild(aisleText);
     iconDiv.appendChild(icon);
     iconDiv.appendChild(label);
@@ -110,7 +113,7 @@ for (i = 0; i < coll.length; i++) {
 // budget scale variables
 var budgetCanvas = document.getElementById("budgetScale");
 var budgetCtx = budgetCanvas.getContext("2d");
-budgetCtx.fillStyle = "#0c5cb7";
+budgetCtx.fillStyle = "#90738c";
 
 var total = 0;
 var budget = 0;
@@ -118,15 +121,24 @@ var missingItems = 0;
 var overBudgetShown = false;
 var missingItemShown = false;
 
-var shoppingList = [{name: "cheese", inCart: true}, {name: "2% milk", inCart: true}, {name: "bread", inCart: false}, {name: "pasta", inCart: false}];
-//{name: "cheese", inCart: true}, {name: "2% milk", inCart: true}, {name: "bread", inCart: true}
-var inCart = [{name: "cheese", quantity: 2, price: 2.50}, {name: "2% milk", quantity: 1, price: 3}];
-// {name: "bread", quantity: 1, price:2.50}
+var itemsDatabase = [{name: "cheese", x: 160, y: 480, aisle: 2, price: 3},
+                     {name: "Almond Milk", x: 410, y: 250, aisle: 7, price: 5},
+                     {name: "chicken", x: 500, y: 110, aisle: "Deli", price: 15},
+                     {name: "pasta", x: 920, y: 400, aisle: 10, price: 2}]
 
-// TODO: move to on cart change function
-inCart.forEach(item => {
-  total += (item.price * item.quantity);
-});
+var shoppingList = [];
+var inCart = [];
+var aisles = [{number: 2, name: "Dairy: Cheese, Egg, and Butter", coupons: [
+                                                                  {name: "BOGO 50% off cheese", product: "cheese", reduction: "50%", quantity:2, deal: true},
+                                                                  {name: "50 cents off eggs", product: "eggs", reduction: .50, quantity:1, deal: false}]},
+              {number: 7, name: "Dairy: Milk", coupons: [
+                                                {name: "10% off Whole Milk", product: "whole milk", reduction: "10%", quantity:1, deal: true}]},
+              {number: "Deli", name: "Deli", coupons: [
+                                                {name: "BOGO 50% off turkey", product: "turkey", reduction: "50%", quantity:2, deal: false},
+                                                {name: "2 dollars off chicken", product: "chicken", reduction: 2, quantity:1, deal: true}]},
+              {number: 10, name:"Pasta and Grain", coupons: [
+                                                    {name: "Buy 2 get 1 free Pasta", product: "pasta", reduction: itemsDatabase[3].price, quantity:3, deal: false}]}
+              ]
 
 shoppingList.forEach(item => {
   if(!item.inCart) {
@@ -216,6 +228,14 @@ function updateList() {
     shoppingList.push({name: value, inCart: false});
     updateListDropdown(shoppingList, "shoppingList");
     updateListDropdown(shoppingList, "shoppingListMobile");
+
+    itemsDatabase.forEach(item => {
+      if(item.name == value) {
+        drawItem(item.x, item.y)
+        connectItem(item,inAisle)
+      }
+    })
+
     shoppingList.forEach(item => {
       if(!item.inCart) {
         missingItems++;
@@ -330,7 +350,7 @@ showCart("inCartCheck");
 showCart("inCartMobile");
 
 
-var milkSearch = [{name: "2% Milk", inCart: false, onList: true}, {name: "Whole Milk", inCart: false, onList: false}, {name: "Almond Milk", inCart: false, onList: false}];
+var milkSearch = [{name: "2% Milk", inCart: false, onList: false}, {name: "Whole Milk", inCart: false, onList: false}, {name: "Almond Milk", inCart: false, onList: false}];
 
 function createSearchItem(name, inCart, onList) {
   var div  = document.createElement("div");
@@ -378,6 +398,14 @@ function addSearchToList(id) {
   shoppingList.push({name: id, inCart: false});
   updateListDropdown(shoppingList, "shoppingList");
   updateListDropdown(shoppingList, "shoppingListMobile");
+
+  itemsDatabase.forEach(item => {
+    if(item.name == id) {
+      drawItem(item.x, item.y)
+      connectItem(item,inAisle)
+    }
+  })
+
   shoppingList.forEach(item => {
     if(!item.inCart) {
       missingItems++;
@@ -430,6 +458,26 @@ function createCoupon(title, applied, idName) {
   couponContent.appendChild(div);
 }
 
+function clearCouponContent() {
+  document.getElementById("couponContent").innerHTML = "";
+  // document.getElementById("couponContentCheck").innerHTML = "";
+  // document.getElementById("couponContentMobile").innerHTML = "";
+}
+
+function setAisleCoupons(aisleNum) {
+  clearCouponContent();
+  document.getElementById("currentAisle").innerHTML = "Current Aisle: " + aisleNum;
+  aisles.forEach(aisle => {
+    if(aisle.number == aisleNum) {
+      aisle.coupons.forEach(coupon => {
+        createCoupon(coupon.name, false, "couponContent")
+        // createCoupon(coupon.name, false, "couponContentCheck")
+        // createCoupon(coupon.name, false, "couponContentMobile")
+      })
+    }
+  })
+}
+
 function testFunction(id) {
   var clicked = document.getElementById(id);
   clicked.textContent = "Applied";
@@ -448,7 +496,7 @@ function createWarning(title, idName) {
 
   var detailsBtn = document.createElement("button");
   detailsBtn.textContent = "Details";
-  detailsBtn.className = "warningBtn";
+  detailsBtn.className = "dropdownBtn";
   detailsBtn.id = title;
   detailsBtn.setAttribute('onclick','showDetails(this.id)');
 
@@ -459,12 +507,12 @@ function createWarning(title, idName) {
   couponContent.appendChild(div);
 }
 
-createCoupon("BOGO 50% off cheese", false, "couponContent");
-createCoupon("50% off bread", false, "couponContent");
-createCoupon("BOGO 50% off cheese", false, "couponContentCheck");
-createCoupon("50% off bread", false, "couponContentCheck");
-createCoupon("BOGO 50% off cheese", false, "couponContentMobile");
-createCoupon("50% off bread", false, "couponContentMobile");
+// createCoupon("BOGO 50% off cheese", false, "couponContent");
+// createCoupon("50% off bread", false, "couponContent");
+// createCoupon("BOGO 50% off cheese", false, "couponContentCheck");
+// createCoupon("50% off bread", false, "couponContentCheck");
+// createCoupon("BOGO 50% off cheese", false, "couponContentMobile");
+// createCoupon("50% off bread", false, "couponContentMobile");
 
 var detailsPopup = document.getElementById("detailsPopup");
 function showDetails(id) {
@@ -533,7 +581,7 @@ function showAisleNum() {
 
 
 var stop_button = document.getElementById('stop');
-var start_button = document.getElementById('start');
+var simulate_button = document.getElementById('start');
 
 stop_button.addEventListener('click', pauseResume);
 
@@ -547,13 +595,13 @@ function drawLine(startX, startY, endX, endY)
   routeCtx.beginPath();
   routeCtx.moveTo(startX, startY);
   routeCtx.lineTo(endX, endY);
-  routeCtx.strokeStyle = 'red';
+  routeCtx.strokeStyle = '#593202';
   routeCtx.stroke();
 }
 
 function drawItem(x, y)
 {
-  routeCtx.fillStyle = "#1073E5";
+  routeCtx.fillStyle = "#739086";
   routeCtx.strokeStyle = "gray";
   routeCtx.setLineDash([0, 0]);
   routeCtx.lineWidth = 3;
@@ -563,8 +611,8 @@ function drawItem(x, y)
   routeCtx.stroke();
 }
 
-function drawDot(point, color) {
-  routeCtx.fillStyle = color;
+function drawDot(point) {
+  routeCtx.fillStyle = "#90738c";
   routeCtx.strokeStyle = "black";
   routeCtx.lineWidth = 3;
   routeCtx.beginPath();
@@ -600,19 +648,69 @@ function pauseResume()
   
 }
 
-drawMapLines();
-drawItems(numItems);
-xy = getLineXYatPercent({
-  x: 0,
-  y: 570
-}, {
-  x: 0,
-  y: 570
-}, percent);
-drawDot(xy, "red");
+// drawMapLines();
+// drawItems(numItems);
+// xy = getLineXYatPercent({
+//   x: 0,
+//   y: 570
+// }, {
+//   x: 0,
+//   y: 570
+// }, percent);
+// drawDot(xy, "red");
 
-function start() {
-  start_button.disabled = true;
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function simulate() {
+  var budgetInput = document.getElementById("budget");
+  var mobileInput = document.getElementById("addToListMobile");
+  var mobileInputBtn = document.getElementById("addToListBtnMobile");
+  var searchInput = document.getElementById("searchBar");
+  var listCollapsible = document.getElementById("listCollapsible")
+  var listInput = document.getElementById("addToList");
+  var listInputBtn = document.getElementById("addToListBtn");
+  var listViewMapBtn = document.getElementById("listViewMap");
+
+  var budgetEvt = {
+    target: {
+      value: 100
+    }
+  };
+  var searchEvt = {
+    target: {
+      value: "milk"
+    }
+  };
+
+  budgetInput.value = "100";
+  onBudgetChange(budgetEvt);
+  await sleep(500);
+  mobileInput.value = "cheese";
+  await sleep(1000);
+  mobileInputBtn.click();
+  await sleep(1000);
+  searchInput.value = "milk"
+  await sleep(500);
+  search(searchEvt);
+  var milkAddBtn = document.getElementById("Almond Milk");
+  await sleep(1000);
+  milkAddBtn.click();
+  await sleep(1000);
+  listCollapsible.click();
+  await sleep(1000);
+  listInput.value = "chicken";
+  await sleep(500);
+  listInputBtn.click();
+  await sleep(500);
+  listInput.value = "pasta";
+  await sleep(500);
+  listInputBtn.click();
+  await sleep(2000);
+  listViewMapBtn.click();
+
+  simulate_button.disabled = true;
   animate();
 }
 
@@ -634,7 +732,7 @@ function animate() {
       }, 3000 / fps);
     }
 }
-start_button.addEventListener('click', start);
+simulate_button.addEventListener('click', simulate);
 
 function getLineXYatPercent(startPt, endPt, percent) {
   var dx = endPt.x - startPt.x;
@@ -650,18 +748,93 @@ function getLineXYatPercent(startPt, endPt, percent) {
 function drawMapLines()
 {
   routeCtx.clearRect(0, 0, routeCanvas.width, routeCanvas.height);
-  drawLine(0, 570, 160, 570);
-  drawLine(160, 570, 160, 480);
-  drawLine(160, 470, 160, 350);
-  drawLine(160, 350, 410, 350);
-  drawLine(410, 350, 410, 250);
-  drawLine(410, 240, 410, 110);
-  drawLine(410, 110, 500, 110);
-  drawLine(510, 110, 920, 110);
-  drawLine(920, 110, 920, 400);
-  drawLine(920, 410, 920, 570);
-  drawLine(920, 570, 590, 570);
-  drawLine(590, 570, 590, 600);
+  if(numItems == 4)
+  {
+    currentX = 0;
+    currentY = 570;
+    inAisle = false;
+    connectItem(itemsDatabase[0], inAisle);
+  }
+  if(numItems >= 3)
+  {
+    currentX = itemsDatabase[0].x;
+    currentY = itemsDatabase[0].y;
+    inAisle = typeof itemsDatabase[0].aisle == "number";
+    connectItem(itemsDatabase[1], inAisle);
+  }
+  if(numItems >= 2)
+  {
+    currentX = itemsDatabase[1].x;
+    currentY = itemsDatabase[1].y;
+    inAisle = typeof itemsDatabase[1].aisle == "number";
+    connectItem(itemsDatabase[2], inAisle);
+  }
+  if(numItems >= 1)
+  {
+    currentX = itemsDatabase[2].x;
+    currentY = itemsDatabase[2].y;
+    inAisle = typeof itemsDatabase[2].aisle == "number";
+    connectItem(itemsDatabase[3], inAisle);
+  }
+  else {
+    drawLine(920, 410, 920, 570);
+    drawLine(920, 570, 590, 570);
+    drawLine(590, 570, 590, 600);
+  }
+}
+
+function connectItem(item, inAisleLoc)
+{
+  const middleLane = 350;
+  if(!inAisleLoc) {
+    drawLine(currentX, currentY, item.x, currentY);
+    drawLine(item.x, currentY, item.x, item.y);
+  }
+  else if(currentY > middleLane){
+    drawLine(currentX, currentY, currentX, middleLane);
+    drawLine(currentX, middleLane, item.x, middleLane);
+    drawLine(item.x, middleLane, item.x, item.y);
+  }
+  else {
+    drawLine(currentX, currentY, currentX, item.y);
+    drawLine(currentX, item.y, item.x, item.y);
+  }
+  currentX = item.x;
+  currentY = item.y;
+  inAisle = (typeof item.aisle === 'number')
+}
+
+function addItemToCart(index, quantity) {
+  inCart.push({name: itemsDatabase[index].name, quantity: quantity, price: itemsDatabase[index].price})
+  total += quantity*itemsDatabase[index].price;
+  showCart("inCart");
+  showCart("inCartCheck");
+  showCart("inCartMobile");
+  missingItems = 0
+  shoppingList.forEach(item => {
+    if(item.name == itemsDatabase[index].name)
+     {
+      item.inCart = true;
+     }
+     if(!item.inCart) {
+      missingItems++;
+    }
+  });
+  updateListDropdown(shoppingList, "shoppingList");
+  updateListDropdown(shoppingList, "shoppingListMobile");
+
+  if(missingItems > 0 && !missingItemShown)
+  {
+    createWarning("Missing Items", "warningList");
+    missingItemShown = true;
+  }
+  else if(missingItems == 0 && missingItemShown) {
+    document.getElementById("warningList").innerHTML = "";
+    if(overBudgetShown) {
+      createWarning("Over Budget", "warningList");
+    }
+    missingItemShown = false;
+  }
 }
 
 function drawItems(num)
@@ -683,6 +856,7 @@ function drawItems(num)
     drawItem(920, 400);
   }
 }
+var click = true;
 
 function draw(sliderValue) {
   drawMapLines();
@@ -711,6 +885,14 @@ function draw(sliderValue) {
           x: 160,
           y: 480
       }, percent);
+      if(click)
+      {
+        var aisleNum = itemsDatabase[0].aisle;
+        setAisleCoupons(aisleNum);
+        document.getElementById("homeTab").click();
+        document.getElementById("couponCollapsible").click();
+        click = false;
+      }
     }
     else if (sliderValue <= 300) {
       var percent = (sliderValue - 100) / 100
@@ -724,6 +906,14 @@ function draw(sliderValue) {
       if(numItems == 4)
       {
         numItems--;
+        var inCartBtn = document.getElementById("cartCollapsible");
+        var inCartMobileBtn = document.getElementById("cartTabMobile");
+        
+        inCartBtn.click();
+        inCartMobileBtn.click();
+        addItemToCart(0,2);
+        inCartBtn.click();
+        inCartMobileBtn.click();
       }
     }
     else if(sliderValue <= 400) {
@@ -755,7 +945,8 @@ function draw(sliderValue) {
           x: 410,
           y: 250
       }, percent);
-
+      var aisleNum = itemsDatabase[1].aisle;
+      setAisleCoupons(aisleNum);
     }
     else if(sliderValue <= 700) {
       var percent = (sliderValue - 400) / 100
@@ -769,6 +960,7 @@ function draw(sliderValue) {
       if(numItems == 3)
       {
         numItems--;
+        addItemToCart(1,1);
       }
     }
     else if(sliderValue <= 800) {
@@ -790,6 +982,8 @@ function draw(sliderValue) {
           x: 500,
           y: 110
       }, percent);
+      var aisleNum = itemsDatabase[2].aisle;
+      setAisleCoupons(aisleNum);
     }
     else if(sliderValue <= 1000) {
       var percent = (sliderValue - 800) / 100
@@ -803,6 +997,7 @@ function draw(sliderValue) {
       if(numItems == 2)
       {
         numItems--;
+        addItemToCart(2,1);
       }
     }
     else if(sliderValue <= 1100) {
@@ -824,6 +1019,8 @@ function draw(sliderValue) {
           x: 920,
           y: 400
       }, percent);
+      var aisleNum = itemsDatabase[3].aisle;
+      setAisleCoupons(aisleNum);
     }
     else if(sliderValue <= 1300) {
       var percent = (sliderValue - 1100) / 100
@@ -837,6 +1034,7 @@ function draw(sliderValue) {
       if(numItems == 1)
       {
         numItems--;
+        addItemToCart(3,3);
       }
     }
     else if(sliderValue <= 1400) {
@@ -868,6 +1066,7 @@ function draw(sliderValue) {
           x: 590,
           y: 600
       }, percent);
+      document.getElementById("currentAisle").innerHTML = "Current Aisle: None";
     }
     else {
       var percent = (sliderValue - 1500) / 100
@@ -878,7 +1077,8 @@ function draw(sliderValue) {
           x: 590,
           y: 600
       }, percent);
+      routeCtx.clearRect(0, 0, routeCanvas.width, routeCanvas.height);
     }
-  drawDot(xy, "red");
+  drawDot(xy);
 
 }
