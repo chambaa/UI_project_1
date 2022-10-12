@@ -1,6 +1,8 @@
 var currentX = 0;
 var currentY = 570;
 var inAisle = false;
+var noWarnings = true;
+var currentAisle = 0;
 
 // Change main content on tab click
 function openTab(evt, idName) {
@@ -129,15 +131,15 @@ var itemsDatabase = [{name: "cheese", x: 160, y: 480, aisle: 2, price: 3},
 var shoppingList = [];
 var inCart = [];
 var aisles = [{number: 2, name: "Dairy: Cheese, Egg, and Butter", coupons: [
-                                                                  {name: "BOGO 50% off cheese", product: "cheese", reduction: "50%", quantity:2, deal: true},
-                                                                  {name: "50 cents off eggs", product: "eggs", reduction: .50, quantity:1, deal: false}]},
+                                                                  {name: "BOGO 50% off cheese", product: "cheese", reduction: "50%", quantity:2, deal: true, applied: false},
+                                                                  {name: "50 cents off eggs", product: "eggs", reduction: .50, quantity:1, deal: false, applied: false}]},
               {number: 7, name: "Dairy: Milk", coupons: [
-                                                {name: "10% off Whole Milk", product: "whole milk", reduction: "10%", quantity:1, deal: true}]},
+                                                {name: "10% off Whole Milk", product: "whole milk", reduction: "10%", quantity:1, deal: true, applied: false}]},
               {number: "Deli", name: "Deli", coupons: [
-                                                {name: "BOGO 50% off turkey", product: "turkey", reduction: "50%", quantity:2, deal: false},
-                                                {name: "2 dollars off chicken", product: "chicken", reduction: 2, quantity:1, deal: true}]},
+                                                {name: "BOGO 50% off turkey", product: "turkey", reduction: "50%", quantity:2, deal: false, applied: false},
+                                                {name: "2 dollars off chicken", product: "chicken", reduction: 2, quantity:1, deal: true, applied: false}]},
               {number: 10, name:"Pasta and Grain", coupons: [
-                                                    {name: "Buy 2 get 1 free Pasta", product: "pasta", reduction: itemsDatabase[3].price, quantity:3, deal: false}]}
+                                                    {name: "Buy 2 get 1 free Pasta", product: "pasta", reduction: itemsDatabase[3].price, quantity:3, deal: false, applied: false}]}
               ]
 
 shoppingList.forEach(item => {
@@ -150,10 +152,13 @@ if(missingItems > 0 && !missingItemShown)
   createWarning("Missing Items", "warningList");
   missingItemShown = true;
 }
-else if(missingItems == 0 && missingItemShown) {
+else if(missingItems == 0) {
   document.getElementById("warningList").innerHTML = "";
   if(overBudgetShown) {
     createWarning("Over Budget", "warningList");
+  }
+  else {
+    createNoWarnings("warningList");
   }
   missingItemShown = false;
 }
@@ -178,6 +183,9 @@ var onBudgetChange = function(evt) {
       document.getElementById("warningList").innerHTML = "";
       if(missingItemShown) {
         createWarning("Missing Items", "warningList");
+      }
+      else {
+        createNoWarnings("warningList");
       }
       overBudgetShown = false;
     }
@@ -251,6 +259,9 @@ function updateList() {
       document.getElementById("warningList").innerHTML = "";
       if(overBudgetShown) {
         createWarning("Over Budget", "warningList");
+      }
+      else {
+        createNoWarnings("warningList");
       }
       missingItemShown = false;
     }
@@ -422,6 +433,9 @@ function addSearchToList(id) {
     if(overBudgetShown) {
       createWarning("Over Budget", "warningList");
     }
+    else {
+      createNoWarnings("warningList");
+    }
     missingItemShown = false;
   }
   var btn = document.getElementById(id);
@@ -439,7 +453,7 @@ function createCoupon(title, applied, idName) {
   div.appendChild(label)
 
   var appliedBtn = document.createElement("button");
-  appliedBtn.id = title;
+  appliedBtn.id = title + "-" + idName;
   if(applied)
   {
     appliedBtn.textContent = "Applied";
@@ -448,7 +462,7 @@ function createCoupon(title, applied, idName) {
   else
   {
     appliedBtn.textContent = "Apply";
-    appliedBtn.setAttribute('onclick','testFunction(this.id)')
+    appliedBtn.setAttribute('onclick','applyCoupon(this.id)')
   }
 
   appliedBtn.className = "dropdownBtn";
@@ -460,28 +474,90 @@ function createCoupon(title, applied, idName) {
 
 function clearCouponContent() {
   document.getElementById("couponContent").innerHTML = "";
-  // document.getElementById("couponContentCheck").innerHTML = "";
-  // document.getElementById("couponContentMobile").innerHTML = "";
+  document.getElementById("couponContentMobile").innerHTML = "";
+}
+
+function clearCouponContentCheck() {
+  document.getElementById("couponContentCheck").innerHTML = "";
 }
 
 function setAisleCoupons(aisleNum) {
   clearCouponContent();
   document.getElementById("currentAisle").innerHTML = "Current Aisle: " + aisleNum;
+  var mainCoupon = document.getElementById("couponContent");
+  var mobileCoupon = document.getElementById("couponContentMobile");
+  var h2 = document.createElement("h2");
+  h2.innerHTML = "Aisle " + aisleNum;
+  var h2Mobile = document.createElement("h2");
+  h2Mobile.innerHTML = "Aisle " + aisleNum;
+  mainCoupon.appendChild(h2);
+  mobileCoupon.appendChild(h2Mobile);
   aisles.forEach(aisle => {
     if(aisle.number == aisleNum) {
       aisle.coupons.forEach(coupon => {
-        createCoupon(coupon.name, false, "couponContent")
-        // createCoupon(coupon.name, false, "couponContentCheck")
-        // createCoupon(coupon.name, false, "couponContentMobile")
+        createCoupon(coupon.name, coupon.applied, "couponContent")
+        createCoupon(coupon.name, coupon.applied, "couponContentMobile")
       })
     }
   })
 }
 
-function testFunction(id) {
-  var clicked = document.getElementById(id);
-  clicked.textContent = "Applied";
-  clicked.disabled = true;
+function setTodaysDeals() {
+  clearCouponContent();
+  var couponContent = document.getElementById("couponContent");
+  var couponContentMobile = document.getElementById("couponContentMobile");
+  var h2 = document.createElement("h2");
+  h2.innerHTML = "Today's Deals";
+  var h2Mobile = document.createElement("h2");
+  h2Mobile.innerHTML = "Today's Deals";
+  couponContent.appendChild(h2);
+  couponContentMobile.appendChild(h2Mobile);
+  aisles.forEach(aisle => {
+      aisle.coupons.forEach(coupon => {
+        if(coupon.deal) {
+          createCoupon(coupon.name, coupon.applied, "couponContent")
+          createCoupon(coupon.name, coupon.applied, "couponContentMobile")
+        }
+      })
+  })
+}
+
+function setCouponsInCart() {
+  clearCouponContentCheck();
+
+  inCart.forEach(item => {
+    aisles.forEach(aisle => {
+      aisle.coupons.forEach(coupon => {
+        if(coupon.product == item.name) {
+          createCoupon(coupon.name, coupon.applied, "couponContentCheck")
+        }
+      })
+  })
+
+  })
+}
+
+setTodaysDeals();
+
+function applyCoupon(id) {
+  var name = id.substring(0,id.indexOf("-"));
+  // var clicked = document.getElementById(id);
+  // clicked.textContent = "Applied";
+  // clicked.disabled = true;
+  aisles.forEach(aisle => {
+    aisle.coupons.forEach(coupon => {
+      if(coupon.name == name) {
+        coupon.applied = true;
+      }
+    })
+  })
+  if(currentAisle == 0) {
+    setTodaysDeals();
+  }
+  else {
+    setAisleCoupons(currentAisle);
+  }
+  setCouponsInCart();
 }
 
 
@@ -504,15 +580,24 @@ function createWarning(title, idName) {
   div.appendChild(detailsBtn)
 
   var couponContent = document.getElementById(idName);
+  if(noWarnings) {
+    couponContent.innerHTML = "";
+  }
   couponContent.appendChild(div);
 }
 
-// createCoupon("BOGO 50% off cheese", false, "couponContent");
-// createCoupon("50% off bread", false, "couponContent");
-// createCoupon("BOGO 50% off cheese", false, "couponContentCheck");
-// createCoupon("50% off bread", false, "couponContentCheck");
-// createCoupon("BOGO 50% off cheese", false, "couponContentMobile");
-// createCoupon("50% off bread", false, "couponContentMobile");
+function createNoWarnings(idName) {
+  var div  = document.createElement("div");
+  div.className = "couponContentItem";
+
+  var label = document.createElement("label");
+  var totalText = document.createTextNode("No Warnings. Click Pay to checkout.");
+  label.appendChild(totalText);
+  div.appendChild(label)
+  var couponContent = document.getElementById(idName);
+  couponContent.appendChild(div);
+  noWarnings = true;
+}
 
 var detailsPopup = document.getElementById("detailsPopup");
 function showDetails(id) {
@@ -575,15 +660,9 @@ function showAisleNum() {
         aisleNums[i].style.display = "none";
       }
   }
-
-
 }
 
-
-var stop_button = document.getElementById('stop');
 var simulate_button = document.getElementById('start');
-
-stop_button.addEventListener('click', pauseResume);
 
 var routeCanvas = document.getElementById("mapBackground");
 var routeCtx = routeCanvas.getContext("2d");
@@ -628,36 +707,6 @@ var fps = 60;
 var percent = 0
 var direction = 1;
 var numItems = 4;
-var pause = false;
-
-function pauseResume()
-{
-  if(!pause)
-  {
-    stop_button.innerHTML = 'Resume';
-    pause = true;
-  }
-  else
-  {
-    stop_button.innerHTML = 'Pause';
-    pause = false;
-    setTimeout(function () {
-      requestAnimationFrame(animate);
-      }, 3000 / fps); 
-  }
-  
-}
-
-// drawMapLines();
-// drawItems(numItems);
-// xy = getLineXYatPercent({
-//   x: 0,
-//   y: 570
-// }, {
-//   x: 0,
-//   y: 570
-// }, percent);
-// drawDot(xy, "red");
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -722,11 +771,11 @@ function animate() {
         percent = 0;
         direction = 1;
     };
-    if (percent < 2000 && !pause)
+    if (percent < 2000)
     {
       draw(percent);
 
-      // request another frame only if it is not done and not paused
+      // request another frame
       setTimeout(function () {
           requestAnimationFrame(animate);
       }, 3000 / fps);
@@ -786,14 +835,30 @@ function drawMapLines()
 function connectItem(item, inAisleLoc)
 {
   const middleLane = 350;
+  const fullAisle = 800;
+  const topLane = 110;
+  const bottomLane = 570;
+
+  console.log(currentX)
+  console.log(currentY)
   if(!inAisleLoc) {
     drawLine(currentX, currentY, item.x, currentY);
     drawLine(item.x, currentY, item.x, item.y);
   }
-  else if(currentY > middleLane){
+  else if((currentY > middleLane && currentX < fullAisle) || (item.y > middleLane && currentY < middleLane && item.x < fullAisle)){
     drawLine(currentX, currentY, currentX, middleLane);
     drawLine(currentX, middleLane, item.x, middleLane);
     drawLine(item.x, middleLane, item.x, item.y);
+  }
+  else if((currentY < middleLane && item.x > fullAisle) || (currentX > fullAisle && item.y < middleLane)) {
+    drawLine(currentX, currentY, currentX, topLane);
+    drawLine(currentX, topLane, item.x, topLane);
+    drawLine(item.x, topLane, item.x, item.y);
+  }
+  else if(currentX > fullAisle && item.y > middleLane) {
+    drawLine(currentX, currentY, currentX, bottomLane);
+    drawLine(currentX, bottomLane, item.x, bottomLane);
+    drawLine(item.x, bottomLane, item.x, item.y);
   }
   else {
     drawLine(currentX, currentY, currentX, item.y);
@@ -810,6 +875,14 @@ function addItemToCart(index, quantity) {
   showCart("inCart");
   showCart("inCartCheck");
   showCart("inCartMobile");
+
+  var evt = {
+    target: {
+      value: budget
+    }
+  }
+  onBudgetChange(evt);
+
   missingItems = 0
   shoppingList.forEach(item => {
     if(item.name == itemsDatabase[index].name)
@@ -833,8 +906,13 @@ function addItemToCart(index, quantity) {
     if(overBudgetShown) {
       createWarning("Over Budget", "warningList");
     }
+    else {
+      createNoWarnings("warningList");
+    }
     missingItemShown = false;
   }
+
+  setCouponsInCart();
 }
 
 function drawItems(num)
@@ -857,6 +935,7 @@ function drawItems(num)
   }
 }
 var click = true;
+var checkout = true;
 
 function draw(sliderValue) {
   drawMapLines();
@@ -887,10 +966,10 @@ function draw(sliderValue) {
       }, percent);
       if(click)
       {
-        var aisleNum = itemsDatabase[0].aisle;
-        setAisleCoupons(aisleNum);
-        document.getElementById("homeTab").click();
-        document.getElementById("couponCollapsible").click();
+        currentAisle = itemsDatabase[0].aisle;
+        setAisleCoupons(currentAisle);
+        // document.getElementById("homeTab").click();
+        // document.getElementById("couponCollapsible").click();
         click = false;
       }
     }
@@ -945,8 +1024,8 @@ function draw(sliderValue) {
           x: 410,
           y: 250
       }, percent);
-      var aisleNum = itemsDatabase[1].aisle;
-      setAisleCoupons(aisleNum);
+      currentAisle = itemsDatabase[1].aisle;
+      setAisleCoupons(currentAisle);
     }
     else if(sliderValue <= 700) {
       var percent = (sliderValue - 400) / 100
@@ -982,8 +1061,8 @@ function draw(sliderValue) {
           x: 500,
           y: 110
       }, percent);
-      var aisleNum = itemsDatabase[2].aisle;
-      setAisleCoupons(aisleNum);
+      currentAisle = itemsDatabase[2].aisle;
+      setAisleCoupons(currentAisle);
     }
     else if(sliderValue <= 1000) {
       var percent = (sliderValue - 800) / 100
@@ -1019,8 +1098,8 @@ function draw(sliderValue) {
           x: 920,
           y: 400
       }, percent);
-      var aisleNum = itemsDatabase[3].aisle;
-      setAisleCoupons(aisleNum);
+      currentAisle= itemsDatabase[3].aisle;
+      setAisleCoupons(currentAisle);
     }
     else if(sliderValue <= 1300) {
       var percent = (sliderValue - 1100) / 100
@@ -1067,6 +1146,8 @@ function draw(sliderValue) {
           y: 600
       }, percent);
       document.getElementById("currentAisle").innerHTML = "Current Aisle: None";
+      currentAisle = 0
+      setTodaysDeals();
     }
     else {
       var percent = (sliderValue - 1500) / 100
@@ -1078,6 +1159,9 @@ function draw(sliderValue) {
           y: 600
       }, percent);
       routeCtx.clearRect(0, 0, routeCanvas.width, routeCanvas.height);
+      if(checkout) {
+        document.getElementById("checkoutTab").click();
+      }
     }
   drawDot(xy);
 
