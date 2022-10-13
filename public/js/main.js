@@ -4,6 +4,11 @@ var inAisle = false;
 var noWarnings = true;
 var currentAisle = 0;
 
+var simulate_button = document.getElementById('start');
+var reset_button = document.getElementById('reset');
+var add_button = document.getElementById('addToCart');
+add_button.disabled = true;
+
 // Change main content on tab click
 function openTab(evt, idName) {
     var i, tabcontent, tablinks;
@@ -71,14 +76,41 @@ var search = function(evt) {
   icon.ariaHidden = true;
   var iconDiv = document.getElementById("aisleIcon");
   var label = document.createElement("label");
-  if(evt.target.value.toLowerCase() == "milk")
+  if(evt.target.value.toLowerCase().includes("milk"))
   {
-    var aisleText = document.createTextNode("Aisle 7");
+    var aisleText = document.createTextNode(" Aisle 7");
     label.appendChild(aisleText);
     iconDiv.appendChild(icon);
     iconDiv.appendChild(label);
     milkSearch.forEach(item => {
-      createSearchItem(item.name, item.inCart, item.onList);
+      createSearchItem(item);
+    });
+  }
+  else if(evt.target.value.toLowerCase().includes("cheese")) {
+    var aisleText = document.createTextNode(" Aisle 2");
+    label.appendChild(aisleText);
+    iconDiv.appendChild(icon);
+    iconDiv.appendChild(label);
+    cheeseSearch.forEach(item => {
+      createSearchItem(item);
+    });
+  }
+  else if(evt.target.value.toLowerCase().includes("chicken")) {
+    var aisleText = document.createTextNode(" Deli");
+    label.appendChild(aisleText);
+    iconDiv.appendChild(icon);
+    iconDiv.appendChild(label);
+    chickenSearch.forEach(item => {
+      createSearchItem(item);
+    });
+  }
+  else if(evt.target.value.toLowerCase().includes("pasta")) {
+    var aisleText = document.createTextNode("Aisle 10");
+    label.appendChild(aisleText);
+    iconDiv.appendChild(icon);
+    iconDiv.appendChild(label);
+    pastaSearch.forEach(item => {
+      createSearchItem(item);
     });
   }
   else
@@ -124,7 +156,7 @@ var overBudgetShown = false;
 var missingItemShown = false;
 
 var itemsDatabase = [{name: "cheese", x: 160, y: 480, aisle: 2, price: 3},
-                     {name: "Almond Milk", x: 410, y: 250, aisle: 7, price: 5},
+                     {name: "milk", x: 410, y: 250, aisle: 7, price: 5},
                      {name: "chicken", x: 500, y: 110, aisle: "Deli", price: 15},
                      {name: "pasta", x: 920, y: 400, aisle: 10, price: 2}]
 
@@ -222,6 +254,8 @@ function updateListDropdown(list, className)
 updateListDropdown(shoppingList, "shoppingList");
 updateListDropdown(shoppingList, "shoppingListMobile");
 
+var mappedItems = [];
+
 // Update backend shopping list
 function updateList() {
   var value = document.getElementById("addToList").value;
@@ -238,9 +272,20 @@ function updateList() {
     updateListDropdown(shoppingList, "shoppingListMobile");
 
     itemsDatabase.forEach(item => {
-      if(item.name == value) {
-        drawItem(item.x, item.y)
-        connectItem(item,inAisle)
+      if(item.name.toLowerCase() == value.toLowerCase()) {
+        var mapped = false;
+        mappedItems.forEach(map => {
+          if(map.x == item.x && map.y == item.y) {
+            mapped = true;
+          }
+        })
+        if(!mapped)
+        {
+          drawItem(item.x, item.y)
+          connectItem(item,inAisle)
+          mappedItems.push(item);
+          add_button.disabled = false;
+        }
       }
     })
 
@@ -387,26 +432,29 @@ showCart("inCartCheck");
 showCart("inCartMobile");
 
 
-var milkSearch = [{name: "2% Milk", inCart: false, onList: false}, {name: "Whole Milk", inCart: false, onList: false}, {name: "Almond Milk", inCart: false, onList: false}];
+var milkSearch = [{name: "2% Milk", inCart: false, onList: false, product: "milk"}, {name: "Whole Milk", inCart: false, onList: false, product: "milk"}, {name: "Almond Milk", inCart: false, onList: false, product: "milk"}];
+var cheeseSearch = [{name: "Sharp Chedder", inCart: false, onList: false, product: "cheese"}, {name: "Mexican Blend", inCart: false, onList: false, product: "cheese"}, {name: "Mozzerarella", inCart: false, onList: false, product: "cheese"}];
+var chickenSearch = [{name: "Organic Chicken", inCart: false, onList: false, product: "chicken"}, {name: "Frozen Chicken", inCart: false, onList: false, product: "chicken"}, {name: "Rotisserie Chicken", inCart: false, onList: false, product: "chicken"}, {name: "Fried Chicken", inCart: false, onList: false, product: "chicken"}];
+var pastaSearch = [{name: "Penne Pasta", inCart: false, onList: false, product: "pasta"}, {name: "Spaghetti", inCart: false, onList: false, product: "pasta"}];
 
-function createSearchItem(name, inCart, onList) {
+function createSearchItem(item) {
   var div  = document.createElement("div");
   div.className = "searchItem";
-  div.id = name + "div";
+  div.id = item.name + "div";
 
   var title = document.createElement("label");
-  var totalText = document.createTextNode(name);
+  var totalText = document.createTextNode(item.name);
   title.appendChild(totalText);
   title.style.marginBottom = "15px";
   div.appendChild(title)
 
   var addToList = document.createElement("button");
-  if(inCart)
+  if(item.inCart)
   {
     addToList.textContent = "In Cart";
     addToList.disabled = true;
   }
-  else if(onList)
+  else if(item.onList)
   {
     addToList.textContent = "On List";
     addToList.disabled = true;
@@ -416,7 +464,7 @@ function createSearchItem(name, inCart, onList) {
     addToList.textContent = "Add to List";
   }
   addToList.className = "addToListBtn";
-  addToList.id = name;
+  addToList.id = item.name + "-" + item.product;
   addToList.onclick = function(){addSearchToList(this.id)}
 
   var showMap = document.createElement("button");
@@ -432,14 +480,27 @@ function createSearchItem(name, inCart, onList) {
 }
 
 function addSearchToList(id) {
-  shoppingList.push({name: id, inCart: false});
+  var name = id.substring(0,id.indexOf("-"));
+  var product = id.substring(id.indexOf("-") + 1, id.length);
+  shoppingList.push({name: name, inCart: false});
   updateListDropdown(shoppingList, "shoppingList");
   updateListDropdown(shoppingList, "shoppingListMobile");
 
+  var mapped = false;
   itemsDatabase.forEach(item => {
-    if(item.name == id) {
-      drawItem(item.x, item.y)
-      connectItem(item,inAisle)
+    if(item.name == product) {
+      mappedItems.forEach(map => {
+        if(map.x == item.x && map.y == item.y) {
+          mapped = true;
+        }
+      })
+      if(!mapped)
+      {
+        drawItem(item.x, item.y)
+        connectItem(item,inAisle)
+        mappedItems.push(item);
+        add_button.disabled = false;
+      }
     }
   })
 
@@ -469,20 +530,32 @@ function addSearchToList(id) {
   btn.disabled = true;
 }
 
-function createCoupon(title, applied, idName) {
+function createCoupon(coupon, idName) {
   var div  = document.createElement("div");
   div.className = "couponContentItem";
 
   var label = document.createElement("label");
-  var totalText = document.createTextNode(title);
+  var totalText = document.createTextNode(coupon.name);
   label.appendChild(totalText);
   div.appendChild(label)
 
   var appliedBtn = document.createElement("button");
-  appliedBtn.id = title + "-" + idName;
-  if(applied)
+  appliedBtn.id = coupon.name + "-" + idName;
+
+  var couponInCart = false;
+  inCart.forEach(item => {
+    if(item.name == coupon.product) {
+      couponInCart = true;
+    }
+  })
+
+  if(coupon.applied)
   {
     appliedBtn.textContent = "Applied";
+    appliedBtn.disabled = true;
+  }
+  else if(!couponInCart) {
+    appliedBtn.textContent = "Apply";
     appliedBtn.disabled = true;
   }
   else
@@ -509,23 +582,31 @@ function clearCouponContentCheck() {
 
 function setAisleCoupons(aisleNum) {
   clearCouponContent();
-  document.getElementById("currentAisle").innerHTML = "Current Aisle: " + aisleNum;
-  var mainCoupon = document.getElementById("couponContent");
-  var mobileCoupon = document.getElementById("couponContentMobile");
-  var h2 = document.createElement("h2");
-  h2.innerHTML = "Aisle " + aisleNum;
-  var h2Mobile = document.createElement("h2");
-  h2Mobile.innerHTML = "Aisle " + aisleNum;
-  mainCoupon.appendChild(h2);
-  mobileCoupon.appendChild(h2Mobile);
-  aisles.forEach(aisle => {
-    if(aisle.number == aisleNum) {
-      aisle.coupons.forEach(coupon => {
-        createCoupon(coupon.name, coupon.applied, "couponContent")
-        createCoupon(coupon.name, coupon.applied, "couponContentMobile")
-      })
-    }
-  })
+  if(aisleNum == 0)
+  {
+    setTodaysDeals();
+    document.getElementById("currentAisle").innerHTML = "Current Aisle: None";
+  }
+  else {
+    document.getElementById("currentAisle").innerHTML = "Current Aisle: " + aisleNum;
+    var mainCoupon = document.getElementById("couponContent");
+    var mobileCoupon = document.getElementById("couponContentMobile");
+    var h2 = document.createElement("h2");
+    h2.innerHTML = "Aisle " + aisleNum;
+    h2.style.color = "#593202";
+    var h2Mobile = document.createElement("h2");
+    h2Mobile.innerHTML = "Aisle " + aisleNum;
+    mainCoupon.appendChild(h2);
+    mobileCoupon.appendChild(h2Mobile);
+    aisles.forEach(aisle => {
+      if(aisle.number == aisleNum) {
+        aisle.coupons.forEach(coupon => {
+          createCoupon(coupon, "couponContent")
+          createCoupon(coupon, "couponContentMobile")
+        })
+      }
+    })
+  }
 }
 
 function setTodaysDeals() {
@@ -534,15 +615,17 @@ function setTodaysDeals() {
   var couponContentMobile = document.getElementById("couponContentMobile");
   var h2 = document.createElement("h2");
   h2.innerHTML = "Today's Deals";
+  h2.style.color = "#593202";
   var h2Mobile = document.createElement("h2");
   h2Mobile.innerHTML = "Today's Deals";
+  h2Mobile.style.color = "#593202";
   couponContent.appendChild(h2);
   couponContentMobile.appendChild(h2Mobile);
   aisles.forEach(aisle => {
       aisle.coupons.forEach(coupon => {
         if(coupon.deal) {
-          createCoupon(coupon.name, coupon.applied, "couponContent")
-          createCoupon(coupon.name, coupon.applied, "couponContentMobile")
+          createCoupon(coupon, "couponContent")
+          createCoupon(coupon, "couponContentMobile")
         }
       })
   })
@@ -555,7 +638,7 @@ function setCouponsInCart() {
     aisles.forEach(aisle => {
       aisle.coupons.forEach(coupon => {
         if(coupon.product == item.name) {
-          createCoupon(coupon.name, coupon.applied, "couponContentCheck")
+          createCoupon(coupon, "couponContentCheck")
         }
       })
   })
@@ -565,11 +648,8 @@ function setCouponsInCart() {
 
 setTodaysDeals();
 
-var couponPopup = document.getElementById("couponPopup");
-
 function applyCoupon(id) {
   var name = id.substring(0,id.indexOf("-"));
-  var found = false;
   aisles.forEach(aisle => {
     aisle.coupons.forEach(coupon => {
       if(coupon.name == name) {
@@ -592,9 +672,6 @@ function applyCoupon(id) {
       }
     })
   })
-  if(!found) {
-    couponPopup.style.display = "block";
-  }
   if(currentAisle == 0) {
     setTodaysDeals();
   }
@@ -683,17 +760,12 @@ function showPayPopup() {
   payPopup.style.display = "block";
 }
 
-var closeCoupon = document.getElementsByClassName("close")[0];
-closeCoupon.onclick = function() {
-  couponPopup.style.display = "none";
-}
-
-var closeDetails = document.getElementsByClassName("close")[1];
+var closeDetails = document.getElementsByClassName("close")[0];
 closeDetails.onclick = function() {
   detailsPopup.style.display = "none";
 }
 
-var closePay = document.getElementsByClassName("close")[2];
+var closePay = document.getElementsByClassName("close")[1];
 closePay.onclick = function() {
   payPopup.style.display = "none";
 }
@@ -714,8 +786,6 @@ function showAisleNum() {
       }
   }
 }
-
-var simulate_button = document.getElementById('start');
 
 var routeCanvas = document.getElementById("mapBackground");
 var routeCtx = routeCanvas.getContext("2d");
@@ -765,7 +835,12 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function reset() {
+  window.location.reload();
+}
+
 async function simulate() {
+  simulate_button.disabled = true;
   var budgetInput = document.getElementById("budget");
   var mobileInput = document.getElementById("addToListMobile");
   var mobileInputBtn = document.getElementById("addToListBtnMobile");
@@ -812,7 +887,6 @@ async function simulate() {
   await sleep(2000);
   listViewMapBtn.click();
 
-  simulate_button.disabled = true;
   animate();
 }
 
@@ -835,6 +909,8 @@ function animate() {
     }
 }
 simulate_button.addEventListener('click', simulate);
+reset_button.addEventListener('click', reset);
+add_button.addEventListener('click', mockAddToCart);
 
 function getLineXYatPercent(startPt, endPt, percent) {
   var dx = endPt.x - startPt.x;
@@ -845,6 +921,29 @@ function getLineXYatPercent(startPt, endPt, percent) {
       x: X,
       y: Y
   });
+}
+
+function mockAddToCart() {
+  var itemToRemove = mappedItems[0];
+  mappedItems.splice(0, 1);
+  routeCtx.clearRect(0, 0, routeCanvas.width, routeCanvas.height);
+  currentX = itemToRemove.x;
+  currentY = itemToRemove.y;
+  currentAisle = itemToRemove.aisle;
+  const index = itemsDatabase.indexOf(itemToRemove);
+  inAisle = typeof itemToRemove.aisle == "number";
+  addItemToCart(index, 1);
+  if(mappedItems.length == 0) {
+    add_button.disabled = true;
+  }
+  else
+  {
+    mappedItems.forEach(item => {
+      drawItem(item.x, item.y)
+      connectItem(item, inAisle)
+    })
+  }
+
 }
 
 function drawMapLines()
@@ -964,6 +1063,7 @@ function addItemToCart(index, quantity) {
   }
 
   setCouponsInCart();
+  setAisleCoupons(currentAisle);
 }
 
 function drawItems(num)
