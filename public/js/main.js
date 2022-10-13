@@ -131,15 +131,15 @@ var itemsDatabase = [{name: "cheese", x: 160, y: 480, aisle: 2, price: 3},
 var shoppingList = [];
 var inCart = [];
 var aisles = [{number: 2, name: "Dairy: Cheese, Egg, and Butter", coupons: [
-                                                                  {name: "BOGO 50% off cheese", product: "cheese", reduction: "50%", quantity:2, deal: true, applied: false},
-                                                                  {name: "50 cents off eggs", product: "eggs", reduction: .50, quantity:1, deal: false, applied: false}]},
+                                                                  {name: "BOGO 50% off cheese", product: "cheese", reduction: .50, quantity:2, deal: true, applied: false, percent: true},
+                                                                  {name: "50 cents off eggs", product: "eggs", reduction: .50, quantity:1, deal: false, applied: false, percent: false}]},
               {number: 7, name: "Dairy: Milk", coupons: [
-                                                {name: "10% off Whole Milk", product: "whole milk", reduction: "10%", quantity:1, deal: true, applied: false}]},
+                                                {name: "10% off Whole Milk", product: "whole milk", reduction: .10, quantity:1, deal: true, applied: false, percent: true}]},
               {number: "Deli", name: "Deli", coupons: [
-                                                {name: "BOGO 50% off turkey", product: "turkey", reduction: "50%", quantity:2, deal: false, applied: false},
-                                                {name: "2 dollars off chicken", product: "chicken", reduction: 2, quantity:1, deal: true, applied: false}]},
+                                                {name: "BOGO 50% off turkey", product: "turkey", reduction: .50, quantity:2, deal: false, applied: false, percent: true},
+                                                {name: "2 dollars off chicken", product: "chicken", reduction: 2, quantity:1, deal: true, applied: false, percent: false}]},
               {number: 10, name:"Pasta and Grain", coupons: [
-                                                    {name: "Buy 2 get 1 free Pasta", product: "pasta", reduction: itemsDatabase[3].price, quantity:3, deal: false, applied: false}]}
+                                                    {name: "Buy 2 get 1 free Pasta", product: "pasta", reduction: itemsDatabase[3].price, quantity:3, deal: false, applied: false, percent: false}]}
               ]
 
 shoppingList.forEach(item => {
@@ -273,8 +273,23 @@ function showCart(name)
 {
   var inCartTable = document.getElementById(name);
   inCartTable.innerHTML = '';
+  var trHead = document.createElement('tr');
+  th1 = document.createElement('th');
+  th2 = document.createElement('th');
+  th3 = document.createElement('th');
+  var itemLabel = document.createTextNode("Item");
+  var quantityLabel = document.createTextNode("Quantity");
+  var priceLabel = document.createTextNode("Price");
+  th1.appendChild(itemLabel);
+  th2.appendChild(quantityLabel);
+  th3.appendChild(priceLabel);
+  trHead.appendChild(th1);
+  trHead.appendChild(th2);
+  trHead.appendChild(th3);
+  inCartTable.appendChild(trHead);
   for(i in inCart) {
       var itemObj = inCart[i];
+      var span = itemObj.discount > 0 ? 2 : 1;
 
       var tr = document.createElement('tr');   
 
@@ -299,9 +314,11 @@ function showCart(name)
       var price = document.createTextNode("$" + (itemObj.price * itemObj.quantity));
 
       td1.appendChild(item);
+      td1.rowSpan = span;
       td2.appendChild(minus);
       td2.appendChild(quantity);
       td2.appendChild(plus);
+      td2.rowSpan = span
       td3.appendChild(price);
 
       tr.appendChild(td1);
@@ -309,6 +326,15 @@ function showCart(name)
       tr.appendChild(td3);
 
       inCartTable.appendChild(tr);
+      if(itemObj.discount > 0) {
+        var tr2 = document.createElement('tr');  
+        var td4 = document.createElement('td'); 
+        var discount = document.createTextNode("- $" + itemObj.discount);
+        td4.style.color = "red"
+        td4.appendChild(discount);
+        tr2.appendChild(td4);
+        inCartTable.appendChild(tr2);
+      }
   }
   var tfoot = document.createElement("tfoot");
   var td1 = document.createElement('td');
@@ -539,18 +565,36 @@ function setCouponsInCart() {
 
 setTodaysDeals();
 
+var couponPopup = document.getElementById("couponPopup");
+
 function applyCoupon(id) {
   var name = id.substring(0,id.indexOf("-"));
-  // var clicked = document.getElementById(id);
-  // clicked.textContent = "Applied";
-  // clicked.disabled = true;
+  var found = false;
   aisles.forEach(aisle => {
     aisle.coupons.forEach(coupon => {
       if(coupon.name == name) {
-        coupon.applied = true;
+        inCart.forEach(item => {
+          if(item.name == coupon.product) {
+            coupon.applied = true;
+            found = true;
+            if(item.quantity >= coupon.quantity) {
+              if(coupon.percent) {
+                var discount = item.price * coupon.reduction;
+                item.discount = discount * Math.floor(item.quantity/coupon.quantity);
+              }
+              else {
+                item.discount = coupon.reduction * Math.floor(item.quantity/coupon.quantity);
+              }
+              total -= item.discount;
+            }
+          }
+        })
       }
     })
   })
+  if(!found) {
+    couponPopup.style.display = "block";
+  }
   if(currentAisle == 0) {
     setTodaysDeals();
   }
@@ -558,6 +602,9 @@ function applyCoupon(id) {
     setAisleCoupons(currentAisle);
   }
   setCouponsInCart();
+  showCart("inCart");
+  showCart("inCartCheck");
+  showCart("inCartMobile");
 }
 
 
@@ -631,16 +678,22 @@ function showDetails(id) {
 }
 
 var payPopup = document.getElementById("payPopup");
+
 function showPayPopup() {
   payPopup.style.display = "block";
 }
 
-var closeDetails = document.getElementsByClassName("close")[0];
+var closeCoupon = document.getElementsByClassName("close")[0];
+closeCoupon.onclick = function() {
+  couponPopup.style.display = "none";
+}
+
+var closeDetails = document.getElementsByClassName("close")[1];
 closeDetails.onclick = function() {
   detailsPopup.style.display = "none";
 }
 
-var closePay = document.getElementsByClassName("close")[1];
+var closePay = document.getElementsByClassName("close")[2];
 closePay.onclick = function() {
   payPopup.style.display = "none";
 }
@@ -839,8 +892,6 @@ function connectItem(item, inAisleLoc)
   const topLane = 110;
   const bottomLane = 570;
 
-  console.log(currentX)
-  console.log(currentY)
   if(!inAisleLoc) {
     drawLine(currentX, currentY, item.x, currentY);
     drawLine(item.x, currentY, item.x, item.y);
@@ -870,7 +921,7 @@ function connectItem(item, inAisleLoc)
 }
 
 function addItemToCart(index, quantity) {
-  inCart.push({name: itemsDatabase[index].name, quantity: quantity, price: itemsDatabase[index].price})
+  inCart.push({name: itemsDatabase[index].name, quantity: quantity, price: itemsDatabase[index].price, discount: 0})
   total += quantity*itemsDatabase[index].price;
   showCart("inCart");
   showCart("inCartCheck");

@@ -55,6 +55,13 @@
                         </div>
                         <button class="collapsible" id="couponCollapsible">Coupons</button>
                         <div class="content" id="mainCoupon">
+                            <div id="couponPopup" class="popup">
+                                <div class="popup-content">
+                                    <span class="close">&times;</span>
+                                    <h1>Item not in cart.</h1>
+                                    <p>You must have the item in your cart to apply a coupon.</p>
+                                </div>
+                            </div>
                             <div id="couponContent" class="couponContent"></div>
                         </div>
                     </div>
@@ -148,15 +155,15 @@
             
 
             <div id="Checkout" class="tabcontent">
-                <div id="detailsPopup" class="detailsPopup">
-                    <div class="detailsPopup-content">
+                <div id="detailsPopup" class="popup">
+                    <div class="popup-content">
                         <span class="close">&times;</span>
                         <p id="detailsText"></p>
                         <ul id="detailsList"></ul>
                     </div>
                 </div>
-                <div id="payPopup" class="payPopup">
-                    <div class="payPopup-content">
+                <div id="payPopup" class="popup">
+                    <div class="popup-content">
                         <span class="close">&times;</span>
                         <h1>Insert Credit/Debit Card</h1>
                         <label for="pin">Enter pin:</label>
@@ -168,10 +175,10 @@
                         <div class="cartHeader"><i class="fas fa-shopping-cart" style='font-size:30px;'></i> Cart</div>
                         <table id="inCartCheck">
                             <tr>
-                            <th class="checkoutText">Item</th>
-                            <th class="checkoutText">Quantity</th>
-                            <th class="checkoutText">Price</th>
-                            <th class="checkoutText"></th>
+                                <th class="checkoutText">Item</th>
+                                <th class="checkoutText">Quantity</th>
+                                <th class="checkoutText">Price</th>
+                                <th class="checkoutText"></th>
                             </tr>
                         </table>
                         <button class="dropdownBtn" style="width: 100px; margin: 5px;" onclick="showPayPopup()">Pay</button>

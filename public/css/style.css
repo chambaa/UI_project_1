@@ -501,7 +501,7 @@ li {
     overflow: auto;
 }
 
-.detailsPopup {
+.popup {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
@@ -514,7 +514,7 @@ li {
   }
   
   /* Modal Content */
-  .detailsPopup-content {
+  .popup-content {
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
@@ -523,27 +523,6 @@ li {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
   }
 
-  .payPopup {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 300px; /* Location of the box */
-    left: 0;
-    top: 0;
-    width: 75%; /* Full width */
-    height: 80%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-  }
-  
-  /* Modal Content */
-  .payPopup-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 40%;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-  }
   
   /* The Close Button */
   .close {
