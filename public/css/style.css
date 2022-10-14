@@ -444,7 +444,6 @@ li {
     color: white;
     font-size: 10px;
     min-height: 60px;
-    /* border-radius: 25px; */
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     display: flex;
@@ -458,7 +457,6 @@ li {
     color: black;
     font-size: 10px;
     min-height: 40px;
-    /* border-radius: 25px; */
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     display: flex;
@@ -474,14 +472,12 @@ li {
 .quantityBtn {
     border: none;
     background-color: lightgray;
-    /* color: #8C6E37; */
     color: white;
     border-radius:20px;
     margin: 5px;
 }
 
 .quantityBtn:hover {
-    /* color: #70582c; */
     background-color: gray;
 }
 
@@ -516,7 +512,6 @@ li {
     overflow: auto;
 }
   
-/* Modal Content */
 .popup-content {
     background-color: #fefefe;
     margin: auto;
@@ -539,8 +534,6 @@ li {
     overflow: auto;
 }
 
-
-/* The Close Button */
 .close {
     color: #aaaaaa;
     float: right;

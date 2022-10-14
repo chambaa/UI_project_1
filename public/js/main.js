@@ -399,6 +399,7 @@ function showCart(name)
   inCartTable.appendChild(tfoot);
 }
 
+// Subtract one from quanitity of id
 function minus(id) {
   var index = id.substring(id.length - 1, id.length);
   var updatedItem = inCart[index];
@@ -444,6 +445,7 @@ function minus(id) {
   showCart("inCartMobile");
 }
 
+// Add one to the quanitity of item at id
 function plus(id) {
   var index = id.substring(id.length - 1, id.length);
   var updatedItem = inCart[index];
@@ -487,12 +489,13 @@ showCart("inCart");
 showCart("inCartCheck");
 showCart("inCartMobile");
 
-
+// Mock items for search
 var milkSearch = [{name: "2% Milk", inCart: false, onList: false, product: "milk"}, {name: "Whole Milk", inCart: false, onList: false, product: "milk"}, {name: "Almond Milk", inCart: false, onList: false, product: "milk"}];
 var cheeseSearch = [{name: "Chedder Cheese", inCart: false, onList: false, product: "cheese"}, {name: "Mexican Blend Cheese", inCart: false, onList: false, product: "cheese"}, {name: "Mozzerarella Cheese", inCart: false, onList: false, product: "cheese"}];
 var chickenSearch = [{name: "Organic Chicken", inCart: false, onList: false, product: "chicken"}, {name: "Frozen Chicken", inCart: false, onList: false, product: "chicken"}, {name: "Rotisserie Chicken", inCart: false, onList: false, product: "chicken"}, {name: "Fried Chicken", inCart: false, onList: false, product: "chicken"}];
 var pastaSearch = [{name: "Penne Pasta", inCart: false, onList: false, product: "pasta"}, {name: "Farfalle Pasta", inCart: false, onList: false, product: "pasta"}];
 
+// Create item to show on search
 function createSearchItem(item) {
   var div  = document.createElement("div");
   div.className = "searchItem";
@@ -535,6 +538,7 @@ function createSearchItem(item) {
   searchDiv.appendChild(div);
 }
 
+// Functionality for add to list button
 function addSearchToList(id) {
   var name = id.substring(0,id.indexOf("-"));
   var product = id.substring(id.indexOf("-") + 1, id.length);
@@ -587,6 +591,7 @@ function addSearchToList(id) {
   btn.disabled = true;
 }
 
+// Create coupon content
 function createCoupon(coupon, idName) {
   var div  = document.createElement("div");
   div.className = "couponContentItem";
@@ -628,15 +633,18 @@ function createCoupon(coupon, idName) {
   couponContent.appendChild(div);
 }
 
+// Clear the coupon div for main and mobile
 function clearCouponContent() {
   document.getElementById("couponContent").innerHTML = "";
   document.getElementById("couponContentMobile").innerHTML = "";
 }
 
+// Clear the coupon div for checkout
 function clearCouponContentCheck() {
   document.getElementById("couponContentCheck").innerHTML = "";
 }
 
+// Add coupons for the current aisle
 function setAisleCoupons(aisleNum) {
   clearCouponContent();
   if(aisleNum == 0)
@@ -666,6 +674,7 @@ function setAisleCoupons(aisleNum) {
   }
 }
 
+// Set todays deals
 function setTodaysDeals() {
   clearCouponContent();
   var couponContent = document.getElementById("couponContent");
@@ -688,6 +697,7 @@ function setTodaysDeals() {
   })
 }
 
+// show coupons for items in cart
 function setCouponsInCart() {
   clearCouponContentCheck();
 
@@ -698,13 +708,14 @@ function setCouponsInCart() {
           createCoupon(coupon, "couponContentCheck")
         }
       })
-  })
-
+    })
   })
 }
 
+// Show todays deals at start
 setTodaysDeals();
 
+// Functionality for clicking apply for a coupon
 function applyCoupon(id) {
   var name = id.substring(0,id.indexOf("-"));
   aisles.forEach(aisle => {
@@ -740,7 +751,7 @@ function applyCoupon(id) {
   showCart("inCartMobile");
 }
 
-
+// Create warning
 function createWarning(title, idName) {
   var div  = document.createElement("div");
   div.className = "couponContentItem";
@@ -766,6 +777,7 @@ function createWarning(title, idName) {
   couponContent.appendChild(div);
 }
 
+// Create div content for no warnings
 function createNoWarnings(idName) {
   var div  = document.createElement("div");
   div.className = "couponContentItem";
@@ -812,6 +824,7 @@ function showDetails(id) {
 
 var payPopup = document.getElementById("payPopup");
 
+// Functions for popups
 function showPayPopup() {
   payPopup.style.display = "block";
 }
@@ -831,6 +844,7 @@ closePay.onclick = function() {
   payPopup.style.display = "none";
 }
 
+// Functionality for chicking show aisle numbers
 function showAisleNum() {
   var aisleCheck = document.getElementById("aisleNumCheck");
   var aisleNums = document.getElementsByClassName("aisleNum");
@@ -848,6 +862,7 @@ function showAisleNum() {
   }
 }
 
+// Add item to cart
 function addItemToCart(index, quantity, name = itemsDatabase[index].name) {
   inCart.push({name: name, quantity: quantity, price: itemsDatabase[index].price, discount: 0})
   total += quantity*itemsDatabase[index].price;
@@ -895,6 +910,7 @@ function addItemToCart(index, quantity, name = itemsDatabase[index].name) {
   setAisleCoupons(currentAisle);
 }
 
+// Auto add item to cart
 function mockAddToCart() {
   var itemToRemove = mappedItems[0];
   mappedItems.splice(0, 1);
@@ -923,6 +939,7 @@ function mockAddToCart() {
   }
 }
 
+// Functions for routing and simulation
 var routeCanvas = document.getElementById("mapBackground");
 var routeCtx = routeCanvas.getContext("2d");
 
@@ -975,8 +992,10 @@ function reset() {
   window.location.reload();
 }
 
+// Functionality for simulating
 async function simulate() {
   simulate_button.disabled = true;
+  add_button.disabled = true;
   var budgetInput = document.getElementById("budget");
   var mobileInput = document.getElementById("addToListMobile");
   var mobileInputBtn = document.getElementById("addToListBtnMobile");
@@ -1026,10 +1045,6 @@ async function simulate() {
   listInput.value = "chicken";
   await sleep(500);
   listInputBtn.click();
-  await sleep(500);
-  // listInput.value = "pasta";
-  // await sleep(500);
-  // listInputBtn.click();
   await sleep(1000);
   search(searchEvtBlank);
   searchInput.value = "penne pasta"
@@ -1045,8 +1060,6 @@ async function simulate() {
 }
 
 function animate() {
-
-    // set the animation position (0-100)
     percent += direction;
     if (percent < 0) {
         percent = 0;
