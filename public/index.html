@@ -42,7 +42,7 @@
                 </div>
                 
                 <button style="float:right;"><i class='fas fa-user-circle' style='font-size:30px;'></i></button>
-                <div style="float:right; font-size: 20px; padding: 18px; color: #593202" id="currentAisle">Current Aisle: None</div>
+                <div style="float:right; font-size: 20px; padding: 18px; color: #5F021F" id="currentAisle">Current Aisle: None</div>
             </div>
 
             <div id="Home" class="tabcontent" style="display: block">
@@ -63,7 +63,11 @@
                         <div class="content">
                             <div id="shoppingList" class="shoppingList"></div>
                             <form action="#" onsubmit="updateList();return false">
-                                <input type="text" id="addToList" name="addToList" autocomplete="off">
+                                <input type="text" id="addToList" name="addToList" autocomplete="off"                             
+                                    pattern="^.*[Mm]ilk.*$|^.*[Cc]heese.*$|^.*[Cc]hicken.*$|^.*[Pp]asta.*$" 
+                                    oninvalid="this.setCustomValidity('Item out of stock')" 
+                                    oninput="this.setCustomValidity('')"
+                                >
                                 <input type="submit" value="Add" style="margin-bottom: 5px;" id="addToListBtn">
                             </form> 
                             <button class="dropdownBtn" type="button" id="listViewMap" onclick="viewMap()">View Map</button>
@@ -199,11 +203,11 @@
                                 <th class="checkoutText"></th>
                             </tr>
                         </table>
-                        <button class="dropdownBtn" style="width: 100px; margin: 5px;" onclick="showPayPopup()" id="payBtn">Pay</button>
+                        <button class="payBtn" style="width: 100px; margin: 5px;" onclick="showPayPopup()" id="payBtn">Pay</button>
                     </div>
                     <div class="checkoutRhs">
                         <div class="pay" id="pay">
-                            <div class="cartHeader" style="background-color: #90738c;"><i class="fa fa-exclamation-triangle" style='font-size:30px;'></i> WARNINGS:</div>
+                            <div class="cartHeader" style="background-color: #5F021F;"><i class="fa fa-exclamation-triangle" style='font-size:30px;'></i> WARNINGS:</div>
                             <div id="warningList" class="couponContent" style="margin: 5px;"></div>
                         </div>
                         <div class="checkoutCoupon">
@@ -226,10 +230,16 @@
                     <h1>Anna's Groceries</h1>
                 </div>
                 <div id="mobileList" class="mobileTabContent" style="display: block;">
-                    <h2 style="color: #593202;">Shopping List</h2>
+                    <h2 style="color: #5F021F;">Shopping List</h2>
                     <div id="shoppingListMobile" class="shoppingList"></div>
                     <form action="#" onsubmit="updateList();return false">
-                        <input type="text" id="addToListMobile" name="addToListMobile" autocomplete="off">
+                        <input type="text" id="addToListMobile" 
+                            name="addToListMobile" 
+                            autocomplete="off" 
+                            pattern="^.*[Mm]ilk.*$|^.*[Cc]heese.*$|^.*[Cc]hicken.*$|^.*[Pp]asta.*$" 
+                            oninvalid="this.setCustomValidity('Item out of stock')" 
+                            oninput="this.setCustomValidity('')"
+                        >
                         <input type="submit" value="Add" style="margin-bottom: 5px;" id="addToListBtnMobile">
                     </form> 
                 </div>

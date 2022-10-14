@@ -147,7 +147,7 @@ for (i = 0; i < coll.length; i++) {
 // budget scale variables
 var budgetCanvas = document.getElementById("budgetScale");
 var budgetCtx = budgetCanvas.getContext("2d");
-budgetCtx.fillStyle = "#90738c";
+budgetCtx.fillStyle = "#83AE84";
 
 var total = 0;
 var budget = 0;
@@ -658,7 +658,7 @@ function setAisleCoupons(aisleNum) {
     var mobileCoupon = document.getElementById("couponContentMobile");
     var h2 = document.createElement("h2");
     h2.innerHTML = "Aisle " + aisleNum;
-    h2.style.color = "#593202";
+    h2.style.color = "#5F021F";
     var h2Mobile = document.createElement("h2");
     h2Mobile.innerHTML = "Aisle " + aisleNum;
     mainCoupon.appendChild(h2);
@@ -681,10 +681,10 @@ function setTodaysDeals() {
   var couponContentMobile = document.getElementById("couponContentMobile");
   var h2 = document.createElement("h2");
   h2.innerHTML = "Today's Deals";
-  h2.style.color = "#593202";
+  h2.style.color = "#5F021F";
   var h2Mobile = document.createElement("h2");
   h2Mobile.innerHTML = "Today's Deals";
-  h2Mobile.style.color = "#593202";
+  h2Mobile.style.color = "#5F021F";
   couponContent.appendChild(h2);
   couponContentMobile.appendChild(h2Mobile);
   aisles.forEach(aisle => {
@@ -763,7 +763,7 @@ function createWarning(title, idName) {
 
   var detailsBtn = document.createElement("button");
   detailsBtn.textContent = "Details";
-  detailsBtn.className = "dropdownBtn";
+  detailsBtn.className = "payBtn";
   detailsBtn.id = title;
   detailsBtn.setAttribute('onclick','showDetails(this.id)');
 
@@ -937,6 +937,7 @@ function mockAddToCart() {
       connectItem(item, inAisle)
     })
   }
+  drawDot({x:itemToRemove.x, y: itemToRemove.y});
 }
 
 // Functions for routing and simulation
@@ -950,13 +951,13 @@ function drawLine(startX, startY, endX, endY)
   routeCtx.beginPath();
   routeCtx.moveTo(startX, startY);
   routeCtx.lineTo(endX, endY);
-  routeCtx.strokeStyle = '#593202';
+  routeCtx.strokeStyle = '#5F021F';
   routeCtx.stroke();
 }
 
 function drawItem(x, y)
 {
-  routeCtx.fillStyle = "#739086";
+  routeCtx.fillStyle = "#0E426C";
   routeCtx.strokeStyle = "gray";
   routeCtx.setLineDash([0, 0]);
   routeCtx.lineWidth = 3;
@@ -967,7 +968,8 @@ function drawItem(x, y)
 }
 
 function drawDot(point) {
-  routeCtx.fillStyle = "#90738c";
+  routeCtx.setLineDash([0, 0]);
+  routeCtx.fillStyle = "#58799a";
   routeCtx.strokeStyle = "black";
   routeCtx.lineWidth = 3;
   routeCtx.beginPath();
@@ -1190,274 +1192,275 @@ async function draw(sliderValue) {
   drawItems(numItems);
 
   routeCtx.setLineDash([0, 0]);
-
-    // draw the circle
-    var xy;
-    if (sliderValue <= 100) {
-        var percent = sliderValue / 100;
-        xy = getLineXYatPercent({
-            x: 0,
-            y: 570
-        }, {
-            x: 160,
-            y: 570
-        }, percent);
-    }
-    else if (sliderValue <= 200){
-      var percent = (sliderValue - 100) / 100
+  var xy;
+  if (sliderValue <= 100) {
+      var percent = sliderValue / 100;
       xy = getLineXYatPercent({
-          x: 160,
+          x: 0,
           y: 570
       }, {
           x: 160,
-          y: 480
+          y: 570
       }, percent);
-      if(click)
-      {
-        currentAisle = itemsDatabase[0].aisle;
-        setAisleCoupons(currentAisle);
-        click = false;
-      }
-    }
-    else if (sliderValue <= 300) {
-      var percent = (sliderValue - 100) / 100
-      xy = getLineXYatPercent({
-          x: 160,
-          y: 480
-      }, {
-          x: 160,
-          y: 480
-      }, percent);
-      if(numItems == 4)
-      {
-        numItems--;
-        
-        document.getElementById("cartCollapsible").click();
-        document.getElementById("cartTabMobile").click();
-        mockAddToCart();
-        await sleep(3000);
-        document.getElementById("homeTab").click();
-        await sleep(500);
-        document.getElementById("couponCollapsible").click();
-        await sleep(2000);
-        document.getElementById("BOGO 50% off cheese-couponContent").click();
-        await sleep(2000);
-        document.getElementById("plus 0").click();
-        await sleep(2000);
-        document.getElementById("mapTab").click();
-      }
-    }
-    else if(sliderValue <= 400) {
-      var percent = (sliderValue - 300) / 100
-      xy = getLineXYatPercent({
-          x: 160,
-          y: 480
-      }, {
-          x: 160,
-          y: 350
-      }, percent);
-    }
-    else if(sliderValue <= 500) {
-      var percent = (sliderValue - 400) / 100
-      xy = getLineXYatPercent({
-          x: 160,
-          y: 350
-      }, {
-          x: 410,
-          y: 350
-      }, percent);
-    }
-    else if(sliderValue <= 600) {
-      var percent = (sliderValue - 500) / 100
-      xy = getLineXYatPercent({
-          x: 410,
-          y: 350
-      }, {
-          x: 410,
-          y: 250
-      }, percent);
-      currentAisle = itemsDatabase[1].aisle;
+  }
+  else if (sliderValue <= 200){
+    var percent = (sliderValue - 100) / 100
+    xy = getLineXYatPercent({
+        x: 160,
+        y: 570
+    }, {
+        x: 160,
+        y: 480
+    }, percent);
+    if(click)
+    {
+      currentAisle = itemsDatabase[0].aisle;
       setAisleCoupons(currentAisle);
+      click = false;
     }
-    else if(sliderValue <= 700) {
-      var percent = (sliderValue - 400) / 100
-      xy = getLineXYatPercent({
-          x: 410,
-          y: 250
-      }, {
-          x: 410,
-          y: 250
-      }, percent);
-      if(numItems == 3)
-      {
-        numItems--;
-        mockAddToCart();
-        await sleep(1000);
-        document.getElementById("couponTabMobile").click();
-        await sleep(1000);
-        document.getElementById("aisleNumCheck").click();
-      }
+  }
+  else if (sliderValue <= 300) {
+    var percent = (sliderValue - 100) / 100
+    xy = getLineXYatPercent({
+        x: 160,
+        y: 480
+    }, {
+        x: 160,
+        y: 480
+    }, percent);
+    if(numItems == 4)
+    {
+      numItems--;
+      
+      document.getElementById("cartCollapsible").click();
+      document.getElementById("cartTabMobile").click();
+      mockAddToCart();
+      await sleep(3000);
+      document.getElementById("homeTab").click();
+      await sleep(500);
+      document.getElementById("couponCollapsible").click();
+      await sleep(2000);
+      document.getElementById("BOGO 50% off cheese-couponContent").click();
+      await sleep(2000);
+      document.getElementById("plus 0").click();
+      await sleep(2000);
+      document.getElementById("mapTab").click();
     }
-    else if(sliderValue <= 800) {
-      var percent = (sliderValue - 700) / 100
-      xy = getLineXYatPercent({
-          x: 410,
-          y: 250
-      }, {
-          x: 410,
-          y: 110
-      }, percent);
+  }
+  else if(sliderValue <= 400) {
+    var percent = (sliderValue - 300) / 100
+    xy = getLineXYatPercent({
+        x: 160,
+        y: 480
+    }, {
+        x: 160,
+        y: 350
+    }, percent);
+  }
+  else if(sliderValue <= 500) {
+    var percent = (sliderValue - 400) / 100
+    xy = getLineXYatPercent({
+        x: 160,
+        y: 350
+    }, {
+        x: 410,
+        y: 350
+    }, percent);
+    document.getElementById("currentAisle").innerHTML = "Current Aisle: None";
+    currentAisle = 0
+    setTodaysDeals();
+  }
+  else if(sliderValue <= 600) {
+    var percent = (sliderValue - 500) / 100
+    xy = getLineXYatPercent({
+        x: 410,
+        y: 350
+    }, {
+        x: 410,
+        y: 250
+    }, percent);
+    currentAisle = itemsDatabase[1].aisle;
+    setAisleCoupons(currentAisle);
+  }
+  else if(sliderValue <= 700) {
+    var percent = (sliderValue - 400) / 100
+    xy = getLineXYatPercent({
+        x: 410,
+        y: 250
+    }, {
+        x: 410,
+        y: 250
+    }, percent);
+    if(numItems == 3)
+    {
+      numItems--;
+      mockAddToCart();
+      await sleep(1000);
+      document.getElementById("couponTabMobile").click();
+      await sleep(1000);
+      document.getElementById("aisleNumCheck").click();
     }
-    else if(sliderValue <= 900) {
-      var percent = (sliderValue - 800) / 100
-      xy = getLineXYatPercent({
-          x: 410,
-          y: 110
-      }, {
-          x: 500,
-          y: 110
-      }, percent);
-      currentAisle = itemsDatabase[2].aisle;
-      setAisleCoupons(currentAisle);
+  }
+  else if(sliderValue <= 800) {
+    var percent = (sliderValue - 700) / 100
+    xy = getLineXYatPercent({
+        x: 410,
+        y: 250
+    }, {
+        x: 410,
+        y: 110
+    }, percent);
+  }
+  else if(sliderValue <= 900) {
+    var percent = (sliderValue - 800) / 100
+    xy = getLineXYatPercent({
+        x: 410,
+        y: 110
+    }, {
+        x: 500,
+        y: 110
+    }, percent);
+    currentAisle = itemsDatabase[2].aisle;
+    setAisleCoupons(currentAisle);
+  }
+  else if(sliderValue <= 1000) {
+    var percent = (sliderValue - 800) / 100
+    xy = getLineXYatPercent({
+        x: 500,
+        y: 110
+    }, {
+        x: 500,
+        y: 110
+    }, percent);
+    if(numItems == 2)
+    {
+      numItems--;
+      mockAddToCart();
+      await sleep(1000);
+      document.getElementById("checkoutTab").click();
+      await sleep(2000);
+      document.getElementById("$2 off chicken-couponContentCheck").click();
+      await sleep(1000);
+      document.getElementById("plus 2").click();
+      await sleep(500);
+      document.getElementById("plus 2").click();
+      await sleep(2000);
+      document.getElementById("Missing Items").click();
+      await sleep(2000);
+      document.getElementById("detailsClose").click();
+      await sleep(2000);
+      document.getElementById("mapTab").click();
     }
-    else if(sliderValue <= 1000) {
-      var percent = (sliderValue - 800) / 100
-      xy = getLineXYatPercent({
-          x: 500,
-          y: 110
-      }, {
-          x: 500,
-          y: 110
-      }, percent);
-      if(numItems == 2)
-      {
-        numItems--;
-        mockAddToCart();
-        await sleep(1000);
-        document.getElementById("checkoutTab").click();
-        await sleep(2000);
-        document.getElementById("$2 off chicken-couponContentCheck").click();
-        await sleep(1000);
-        document.getElementById("Missing Items").click();
-        await sleep(2000);
-        document.getElementById("detailsClose").click();
-        await sleep(2000);
-        document.getElementById("plus 2").click();
-        await sleep(500);
-        document.getElementById("plus 2").click();
-        await sleep(2000);
-        document.getElementById("mapTab").click();
-      }
+  }
+  else if(sliderValue <= 1100) {
+    var percent = (sliderValue - 1000) / 100
+    xy = getLineXYatPercent({
+        x: 500,
+        y: 110
+    }, {
+        x: 920,
+        y: 110
+    }, percent);
+  }
+  else if(sliderValue <= 1200) {
+    var percent = (sliderValue - 1100) / 100
+    xy = getLineXYatPercent({
+        x: 920,
+        y: 110
+    }, {
+        x: 920,
+        y: 400
+    }, percent);
+    currentAisle= itemsDatabase[3].aisle;
+    setAisleCoupons(currentAisle);
+  }
+  else if(sliderValue <= 1300) {
+    var percent = (sliderValue - 1100) / 100
+    xy = getLineXYatPercent({
+        x: 920,
+        y: 400
+    }, {
+        x: 920,
+        y: 400
+    }, percent);
+    if(numItems == 1)
+    {
+      numItems--;
+      mockAddToCart();
+      await sleep(1000);
+      document.getElementById("homeTab").click();
+      await sleep(2000);
+      document.getElementById("Buy 2 get 1 free Pasta-couponContentMobile").click();
+      await sleep(2000);
+      document.getElementById("plus 3").click();
+      document.getElementById("plus 3").click();
+      await sleep(2000);
+      document.getElementById("mapTab").click();
     }
-    else if(sliderValue <= 1100) {
-      var percent = (sliderValue - 1000) / 100
-      xy = getLineXYatPercent({
-          x: 500,
-          y: 110
-      }, {
-          x: 920,
-          y: 110
-      }, percent);
+  }
+  else if(sliderValue <= 1400) {
+    var percent = (sliderValue - 1300) / 100
+    xy = getLineXYatPercent({
+        x: 920,
+        y: 400
+    }, {
+        x: 920,
+        y: 570
+    }, percent);
+  }
+  else if(sliderValue <= 1500) {
+    var percent = (sliderValue - 1400) / 100
+    xy = getLineXYatPercent({
+        x: 920,
+        y: 570
+    }, {
+        x: 590,
+        y: 570
+    }, percent);
+  }
+  else if(sliderValue <= 1600) {
+    var percent = (sliderValue - 1500) / 100
+    xy = getLineXYatPercent({
+        x: 590,
+        y: 570
+    }, {
+        x: 590,
+        y: 600
+    }, percent);
+    document.getElementById("currentAisle").innerHTML = "Current Aisle: None";
+    currentAisle = 0
+    setTodaysDeals();
+  }
+  else {
+    var percent = (sliderValue - 1500) / 100
+    xy = getLineXYatPercent({
+        x: 590,
+        y: 600
+    }, {
+        x: 590,
+        y: 600
+    }, percent);
+    if(checkout)
+    {
+      checkout = false;
+      routeCtx.clearRect(0, 0, routeCanvas.width, routeCanvas.height);
+      document.getElementById("checkoutTab").click();
+      await sleep(1000);
+      document.getElementById("Over Budget").click();
+      await sleep(2000);
+      document.getElementById("detailsClose").click();
+      await sleep(2000);
+      document.getElementById("minus 2").click();
+      await sleep(2000);
+      document.getElementById("payBtn").click();
+      await sleep(2000);
+      document.getElementById("pin").value = "1234";
+      await sleep(1000);
+      document.getElementById("submitBtn").click();
+      await sleep(2000);
+      document.getElementById("logoutBtn").click();
     }
-    else if(sliderValue <= 1200) {
-      var percent = (sliderValue - 1100) / 100
-      xy = getLineXYatPercent({
-          x: 920,
-          y: 110
-      }, {
-          x: 920,
-          y: 400
-      }, percent);
-      currentAisle= itemsDatabase[3].aisle;
-      setAisleCoupons(currentAisle);
-    }
-    else if(sliderValue <= 1300) {
-      var percent = (sliderValue - 1100) / 100
-      xy = getLineXYatPercent({
-          x: 920,
-          y: 400
-      }, {
-          x: 920,
-          y: 400
-      }, percent);
-      if(numItems == 1)
-      {
-        numItems--;
-        mockAddToCart();
-        await sleep(1000);
-        document.getElementById("homeTab").click();
-        await sleep(2000);
-        document.getElementById("Buy 2 get 1 free Pasta-couponContentMobile").click();
-        await sleep(2000);
-        document.getElementById("plus 3").click();
-        document.getElementById("plus 3").click();
-        await sleep(2000);
-        document.getElementById("mapTab").click();
-      }
-    }
-    else if(sliderValue <= 1400) {
-      var percent = (sliderValue - 1300) / 100
-      xy = getLineXYatPercent({
-          x: 920,
-          y: 400
-      }, {
-          x: 920,
-          y: 570
-      }, percent);
-    }
-    else if(sliderValue <= 1500) {
-      var percent = (sliderValue - 1400) / 100
-      xy = getLineXYatPercent({
-          x: 920,
-          y: 570
-      }, {
-          x: 590,
-          y: 570
-      }, percent);
-    }
-    else if(sliderValue <= 1600) {
-      var percent = (sliderValue - 1500) / 100
-      xy = getLineXYatPercent({
-          x: 590,
-          y: 570
-      }, {
-          x: 590,
-          y: 600
-      }, percent);
-      document.getElementById("currentAisle").innerHTML = "Current Aisle: None";
-      currentAisle = 0
-      setTodaysDeals();
-    }
-    else {
-      var percent = (sliderValue - 1500) / 100
-      xy = getLineXYatPercent({
-          x: 590,
-          y: 600
-      }, {
-          x: 590,
-          y: 600
-      }, percent);
-      if(checkout)
-      {
-        checkout = false;
-        routeCtx.clearRect(0, 0, routeCanvas.width, routeCanvas.height);
-        document.getElementById("checkoutTab").click();
-        await sleep(1000);
-        document.getElementById("Over Budget").click();
-        await sleep(2000);
-        document.getElementById("detailsClose").click();
-        await sleep(2000);
-        document.getElementById("minus 2").click();
-        await sleep(2000);
-        document.getElementById("payBtn").click();
-        await sleep(2000);
-        document.getElementById("pin").value = "1234";
-        await sleep(1000);
-        document.getElementById("submitBtn").click();
-        await sleep(2000);
-        document.getElementById("logoutBtn").click();
-      }
-    }
+  }
   drawDot(xy);
 
 }
