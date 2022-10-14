@@ -26,3 +26,4 @@ I created two interfaces to achieve these goals. The primary interface, which is
 * You can search for any of these items (or variations) and add them to the list.
 * Once you add items to your list you can click the "Add to Cart" button and it will add the next item on your list to your cart and update the interface as though you had walked to that item.
 * There is also a "Simulate" button that will walk through an entire mock shopping trip.
+* If at anytime you want to start over you can click "Reset".
