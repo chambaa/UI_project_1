@@ -15,6 +15,7 @@ I created two interfaces to achieve these goals. The primary interface, which is
 * Navigate to code directory in terminal.
   * `cd Downloads/UI_project_1`
 * run `npm start`
+* In a browser navigate to: `http://localhost:8080/index.html`
 
 ### Tips for interacting with the mock device
 * This interface is not connected to a real database, but a mock database was created as a proof of concept. The items in the mock database are:
