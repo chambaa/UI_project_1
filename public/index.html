@@ -165,17 +165,27 @@
             <div id="Checkout" class="tabcontent">
                 <div id="detailsPopup" class="popup">
                     <div class="popup-content">
-                        <span class="close">&times;</span>
+                        <span class="close" id="detailsClose">&times;</span>
                         <p id="detailsText"></p>
                         <ul id="detailsList"></ul>
                     </div>
                 </div>
                 <div id="payPopup" class="popup">
                     <div class="popup-content">
-                        <span class="close">&times;</span>
+                        <span class="close" id="payClose">&times;</span>
                         <h1>Insert Credit/Debit Card</h1>
                         <label for="pin">Enter pin:</label>
                         <input type="text" id="pin" name="pin" style="width: 100px;">
+                        <button class="dropdownBtn" id="submitBtn" onclick="submitPay()">Submit</button>
+                    </div>
+                </div>
+                <div id="finishPopup" class="popup">
+                    <div class="popup-content">
+                        <h1>Thank you!</h1>
+                        <div style="display: flex; justify-content: space-between;">
+                            <p>Please exit the store with all purchased products.</p>
+                            <button class="dropdownBtn" id="logoutBtn" onclick="reset()">Logout</button>
+                        </div>
                     </div>
                 </div>
                 <div class="checkoutContent">
@@ -189,7 +199,7 @@
                                 <th class="checkoutText"></th>
                             </tr>
                         </table>
-                        <button class="dropdownBtn" style="width: 100px; margin: 5px;" onclick="showPayPopup()">Pay</button>
+                        <button class="dropdownBtn" style="width: 100px; margin: 5px;" onclick="showPayPopup()" id="payBtn">Pay</button>
                     </div>
                     <div class="checkoutRhs">
                         <div class="pay" id="pay">
