@@ -169,7 +169,7 @@ var aisles = [{number: 2, name: "Dairy: Cheese, Egg, and Butter", coupons: [
                                                 {name: "10% off Whole Milk", product: "whole milk", reduction: .10, quantity:1, deal: true, applied: false, percent: true}]},
               {number: "Deli", name: "Deli", coupons: [
                                                 {name: "BOGO 50% off turkey", product: "turkey", reduction: .50, quantity:2, deal: false, applied: false, percent: true},
-                                                {name: "2 dollars off chicken", product: "chicken", reduction: 2, quantity:1, deal: true, applied: false, percent: false}]},
+                                                {name: "$2 off chicken", product: "chicken", reduction: 2, quantity:1, deal: true, applied: false, percent: false}]},
               {number: 10, name:"Pasta and Grain", coupons: [
                                                     {name: "Buy 2 get 1 free Pasta", product: "pasta", reduction: itemsDatabase[3].price, quantity:3, deal: false, applied: false, percent: false}]}
               ]
@@ -272,7 +272,7 @@ function updateList() {
     updateListDropdown(shoppingList, "shoppingListMobile");
 
     itemsDatabase.forEach(item => {
-      if(item.name.toLowerCase() == value.toLowerCase()) {
+      if(value.toLowerCase().includes(item.name.toLowerCase())) {
         var mapped = false;
         mappedItems.forEach(map => {
           if(map.x == item.x && map.y == item.y) {
@@ -281,9 +281,10 @@ function updateList() {
         })
         if(!mapped)
         {
-          drawItem(item.x, item.y)
-          connectItem(item,inAisle)
-          mappedItems.push(item);
+          drawItem(item.x, item.y);
+          connectItem(item,inAisle);
+          var mappedItem = {name: value, x: item.x, y: item.y, aisle: item.aisle, price: item.price, product: item.name};
+          mappedItems.push(mappedItem);
           add_button.disabled = false;
         }
       }
@@ -400,15 +401,44 @@ function showCart(name)
 
 function minus(id) {
   var index = id.substring(id.length - 1, id.length);
-  inCart[index].quantity -= 1
-  if(inCart[index].quantity == 0)
+  var updatedItem = inCart[index];
+  updatedItem.quantity -= 1
+  if(updatedItem.quantity == 0)
   {
     inCart.splice(index, 1);
   }
+  else
+  {
+    aisles.forEach(aisle => {
+      aisle.coupons.forEach(coupon => {
+        if(updatedItem.name.toLowerCase().includes(coupon.product.toLowerCase())  && coupon.applied) {
+          if(updatedItem.quantity >= coupon.quantity) {
+            if(coupon.percent) {
+              var discount = updatedItem.price * coupon.reduction;
+              updatedItem.discount = discount * Math.floor(updatedItem.quantity/coupon.quantity);
+            }
+            else {
+              updatedItem.discount = coupon.reduction * Math.floor(updatedItem.quantity/coupon.quantity);
+            }
+          }
+          else {
+            updatedItem.discount = 0;
+          }
+        }
+      })
+    })
+  }
   total = 0;
   inCart.forEach(item => {
-    total += (item.price * item.quantity);
+    total += ((item.price * item.quantity) - item.discount);
   });
+  var evt = {
+    target: {
+      value: budget
+    }
+  }
+  onBudgetChange(evt);
+
   showCart("inCart");
   showCart("inCartCheck");
   showCart("inCartMobile");
@@ -416,12 +446,38 @@ function minus(id) {
 
 function plus(id) {
   var index = id.substring(id.length - 1, id.length);
-  inCart[index].quantity += 1
+  var updatedItem = inCart[index];
+  updatedItem.quantity += 1
+  aisles.forEach(aisle => {
+    aisle.coupons.forEach(coupon => {
+      if(updatedItem.name.toLowerCase().includes(coupon.product.toLowerCase()) && coupon.applied) {
+        if(updatedItem.quantity >= coupon.quantity) {
+          if(coupon.percent) {
+            var discount = updatedItem.price * coupon.reduction;
+            updatedItem.discount = discount * Math.floor(updatedItem.quantity/coupon.quantity);
+          }
+          else {
+            updatedItem.discount = coupon.reduction * Math.floor(updatedItem.quantity/coupon.quantity);
+          }
+        }
+        else {
+          updatedItem.discount = 0;
+        }
+      }
+    })
+  })
 
   total = 0;
   inCart.forEach(item => {
-    total += (item.price * item.quantity);
+    total += ((item.price * item.quantity) - item.discount);
   });
+  var evt = {
+    target: {
+      value: budget
+    }
+  }
+  onBudgetChange(evt);
+
   showCart("inCart");
   showCart("inCartCheck");
   showCart("inCartMobile");
@@ -433,9 +489,9 @@ showCart("inCartMobile");
 
 
 var milkSearch = [{name: "2% Milk", inCart: false, onList: false, product: "milk"}, {name: "Whole Milk", inCart: false, onList: false, product: "milk"}, {name: "Almond Milk", inCart: false, onList: false, product: "milk"}];
-var cheeseSearch = [{name: "Sharp Chedder", inCart: false, onList: false, product: "cheese"}, {name: "Mexican Blend", inCart: false, onList: false, product: "cheese"}, {name: "Mozzerarella", inCart: false, onList: false, product: "cheese"}];
+var cheeseSearch = [{name: "Chedder Cheese", inCart: false, onList: false, product: "cheese"}, {name: "Mexican Blend Cheese", inCart: false, onList: false, product: "cheese"}, {name: "Mozzerarella Cheese", inCart: false, onList: false, product: "cheese"}];
 var chickenSearch = [{name: "Organic Chicken", inCart: false, onList: false, product: "chicken"}, {name: "Frozen Chicken", inCart: false, onList: false, product: "chicken"}, {name: "Rotisserie Chicken", inCart: false, onList: false, product: "chicken"}, {name: "Fried Chicken", inCart: false, onList: false, product: "chicken"}];
-var pastaSearch = [{name: "Penne Pasta", inCart: false, onList: false, product: "pasta"}, {name: "Spaghetti", inCart: false, onList: false, product: "pasta"}];
+var pastaSearch = [{name: "Penne Pasta", inCart: false, onList: false, product: "pasta"}, {name: "Farfalle Pasta", inCart: false, onList: false, product: "pasta"}];
 
 function createSearchItem(item) {
   var div  = document.createElement("div");
@@ -498,7 +554,8 @@ function addSearchToList(id) {
       {
         drawItem(item.x, item.y)
         connectItem(item,inAisle)
-        mappedItems.push(item);
+        var mappedItem = {name: name, x: item.x, y: item.y, aisle: item.aisle, price: item.price, product: item.name};
+        mappedItems.push(mappedItem);
         add_button.disabled = false;
       }
     }
@@ -544,7 +601,7 @@ function createCoupon(coupon, idName) {
 
   var couponInCart = false;
   inCart.forEach(item => {
-    if(item.name == coupon.product) {
+    if(item.name.toLowerCase().includes(coupon.product.toLowerCase())) {
       couponInCart = true;
     }
   })
@@ -637,7 +694,7 @@ function setCouponsInCart() {
   inCart.forEach(item => {
     aisles.forEach(aisle => {
       aisle.coupons.forEach(coupon => {
-        if(coupon.product == item.name) {
+        if(item.name.toLowerCase().includes(coupon.product.toLowerCase())) {
           createCoupon(coupon, "couponContentCheck")
         }
       })
@@ -654,9 +711,8 @@ function applyCoupon(id) {
     aisle.coupons.forEach(coupon => {
       if(coupon.name == name) {
         inCart.forEach(item => {
-          if(item.name == coupon.product) {
+          if(item.name.toLowerCase().includes(coupon.product.toLowerCase())) {
             coupon.applied = true;
-            found = true;
             if(item.quantity >= coupon.quantity) {
               if(coupon.percent) {
                 var discount = item.price * coupon.reduction;
@@ -930,9 +986,15 @@ function mockAddToCart() {
   currentX = itemToRemove.x;
   currentY = itemToRemove.y;
   currentAisle = itemToRemove.aisle;
-  const index = itemsDatabase.indexOf(itemToRemove);
+  itemsDatabase.forEach(databaseItem => {
+    if(databaseItem.name == itemToRemove.product) {
+      const index = itemsDatabase.indexOf(databaseItem);
+      addItemToCart(index, 1, itemToRemove.name);
+      
+    }
+  }) 
   inAisle = typeof itemToRemove.aisle == "number";
-  addItemToCart(index, 1);
+  
   if(mappedItems.length == 0) {
     add_button.disabled = true;
   }
@@ -1019,8 +1081,8 @@ function connectItem(item, inAisleLoc)
   inAisle = (typeof item.aisle === 'number')
 }
 
-function addItemToCart(index, quantity) {
-  inCart.push({name: itemsDatabase[index].name, quantity: quantity, price: itemsDatabase[index].price, discount: 0})
+function addItemToCart(index, quantity, name = itemsDatabase[index].name) {
+  inCart.push({name: name, quantity: quantity, price: itemsDatabase[index].price, discount: 0})
   total += quantity*itemsDatabase[index].price;
   showCart("inCart");
   showCart("inCartCheck");
@@ -1035,7 +1097,7 @@ function addItemToCart(index, quantity) {
 
   missingItems = 0
   shoppingList.forEach(item => {
-    if(item.name == itemsDatabase[index].name)
+    if(item.name.toLowerCase().includes(itemsDatabase[index].name.toLowerCase()))
      {
       item.inCart = true;
      }
